@@ -13,30 +13,19 @@ public class JsonBuilder {
         private static class CompleteionOptions {
 
             private final boolean stream = false;
-            private final Double temperature = 0.6;
-            private final String maxTokens = "2000";
+            private final Double temperature = 0.5;
+            private final String maxTokens = "2";
             private final Map<String, String> reasoningOptions = Map.of("mode", "DISABLED");
-        }
-
-        private static class Message {
-
-            private final String role;
-            private final String text;
-
-            public Message(String message) {
-                text = message;
-                role = "user";
-            }
         }
 
         private String modelUri;
         private CompleteionOptions completeionOptions;
-        private List<Message> messages;
+        private List<GptMessage> messages;
 
         public GetQueryStructure(String uri, String message) {
             modelUri = uri;
             completeionOptions = new CompleteionOptions();
-            messages = List.of(new Message(message));
+            messages = List.of(new GptMessage(message));
         }
     }
 
@@ -49,6 +38,6 @@ public class JsonBuilder {
 
     public static String getQueryJson(TokenStore token, String query) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(
-            new GetQueryStructure("gpt://" + token.getToken() + "/yandexgpt", query));
+            new GetQueryStructure("gpt://" + token.getToken() + "/yandexgpt/rc", query));
     }
 }

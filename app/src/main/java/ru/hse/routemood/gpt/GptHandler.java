@@ -18,6 +18,11 @@ public class GptHandler {
             HttpResponse<String> stringHttpResponse = client.send(request,
                 HttpResponse.BodyHandlers.ofString());
 
+            if (stringHttpResponse.statusCode() != 200) {
+                // TODO: Write better error handling
+                throw new RuntimeException("Oops, something went wrong");
+            }
+
             return JsonWorker.getToken(stringHttpResponse.body());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -36,6 +41,11 @@ public class GptHandler {
 
             HttpResponse<String> response = client.send(request,
                 HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                // TODO: Write better error handling
+                throw new RuntimeException("Oops, something went wrong");
+            }
             return response.body();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
