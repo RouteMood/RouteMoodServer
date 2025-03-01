@@ -37,7 +37,7 @@ public class JsonBuilder {
     }
 
     public static String getQueryJson(TokenStore token, String query) {
-        return new GsonBuilder().setPrettyPrinting().create().toJson(
-            new GetQueryStructure("gpt://" + token.getToken() + "/yandexgpt/rc", query));
+        return new GsonBuilder().setPrettyPrinting().create()
+            .toJson(new GetQueryStructure("gpt://" + token.getToken() + "/yandexgpt/rc", query));
     }
 }

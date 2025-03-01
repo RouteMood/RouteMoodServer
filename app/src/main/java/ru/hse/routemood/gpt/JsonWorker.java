@@ -3,6 +3,9 @@ package ru.hse.routemood.gpt;
 
 import com.google.gson.Gson;
 import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+import lombok.Getter;
 
 
 public class JsonWorker {
@@ -42,12 +45,45 @@ public class JsonWorker {
         return new TokenStore(map.iamToken);
     }
 
-    public static String getGptAnswer(String response) {
+    @Getter
+    public static class RouteItem {
+
+        private double latitude;
+        private double longitude;
+
+        @Override
+        public String toString() {
+            return "[latitude = " + latitude + ", longitude = " + longitude + "]";
+        }
+    }
+
+    @Getter
+    public static class RouteAnswer {
+
+        private List<RouteItem> route;
+
+        @Override
+        public String toString() {
+            StringJoiner result = new StringJoiner("\n");
+            for (RouteItem it : route) {
+                result.add(it.toString());
+            }
+            return result.toString();
+        }
+    }
+
+    public static List<RouteItem> getGptAnswer(String response) {
         AnswerForQuery answerForQuery = new Gson().fromJson(response, AnswerForQuery.class);
         if (answerForQuery.result.alternatives.getFirst() == null) {
             throw new RuntimeException("Bad answer from gpt, try later");
         }
 
-        return answerForQuery.result.alternatives.getFirst().message.text;
+        String result = answerForQuery.result.alternatives.getFirst().message.text.chars()
+            .mapToObj(x -> String.valueOf((char) x)).filter(x -> !x.equals("`"))
+            .collect(Collectors.joining());
+
+        RouteAnswer answer = new Gson().fromJson(result, RouteAnswer.class);
+
+        return answer.getRoute();
     }
 }

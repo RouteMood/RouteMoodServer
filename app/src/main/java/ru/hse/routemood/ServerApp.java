@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import ru.hse.routemood.gpt.GptHandler;
-import ru.hse.routemood.gpt.JsonWorker;
 import ru.hse.routemood.gpt.TokenStore;
 
 public class ServerApp {
@@ -34,8 +33,7 @@ public class ServerApp {
         TokenStore oauth = new TokenStore(properties.getProperty("oauth-token"));
         TokenStore folder = new TokenStore(properties.getProperty("folder-token"));
 
-        System.out.println(
-            JsonWorker.getGptAnswer(GptHandler.queryToGPT(GptHandler.getIamToken((oauth)), folder,
-                "Создай пешеходный маршрут длиной примерно 5 км, начинающийся в координатах 59.92951508111041, 30.41197525476372. Учти, что моё текущее душевное состояние — я чувствую усталость и тревогу, хочу спокойствия и уединения")));
+        System.out.println(GptHandler.queryToGPT(GptHandler.getIamToken((oauth)), folder,
+            "Создай пешеходный маршрут длиной примерно 5 км и выведи его в формате json без фразы ```json, где будет поле \"route\", в котором будет массив из координат маршрута, начинающийся в координатах 59.92951508111041, 30.41197525476372. Учти, что моё текущее душевное состояние — я чувствую усталость и тревогу, хочу спокойствия и уединения"));
     }
 }
