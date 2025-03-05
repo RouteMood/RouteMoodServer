@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "USER_") // "User" is a reserved keyword in H2 DB
-class User {
+public class User {
 
     private @Id @GeneratedValue Long id;
     private String login;

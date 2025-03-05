@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 // tag::constructor[]
 @RestController
-class UserController {
+public class UserController {
 
     private final UserRepository repository;
 

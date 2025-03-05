@@ -5,6 +5,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hse.routemood.gpt.GptHandler;
 import ru.hse.routemood.gpt.GptMessage;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 // tag::constructor[]
 @RestController
-class GptMessageController {
+public class GptMessageController {
 
     private final GptMessageRepository repository;
 
@@ -48,7 +49,7 @@ class GptMessageController {
 
         EntityModel<GptMessage> entityModel = assembler.toModel(repository.save(newGptMessage));
 
-        // TODO: query to GPT
+        System.out.println(GptHandler.queryToGPT(newGptMessage.getText()));
 
         return ResponseEntity //
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
