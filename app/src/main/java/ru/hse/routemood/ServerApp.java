@@ -24,6 +24,8 @@ public class ServerApp {
             throw new RuntimeException("No config file was given");
         }
         GptHandler.tokenFileName = args[0];
+        GptHandler.init();
+//        System.out.println(;
         SpringApplication.run(ServerApp.class, args);
     }
 }

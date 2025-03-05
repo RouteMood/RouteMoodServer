@@ -9,15 +9,19 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Properties;
 
+import org.antlr.v4.runtime.Token;
 import ru.hse.routemood.gpt.JsonWorker.RouteItem;
+import ru.hse.routemood.gptMessage.GptRequest;
 
 public class GptHandler {
-    private static final TokenStore iamToken;
-    private static final TokenStore folderToken;
+    private static TokenStore ouathToken;
+    private static TokenStore folderToken;
     public static String tokenFileName;
+    private static final String requestTemplate = "Создай пешеходный маршрут длиной примерно 5 км и выведи его в формате json без фразы ```json, где будет поле \"route\", в котором будет массив из координат маршрута, начинающийся в координатах %s, %s. Учти, что %s";
 
-    static {
+    public static void init() {
         Properties properties = new Properties();
+        System.out.println(tokenFileName);
 
         try (FileInputStream fileInputStream = new FileInputStream(tokenFileName)) {
             properties.load(fileInputStream);
@@ -33,8 +37,16 @@ public class GptHandler {
             throw new RuntimeException("No folder-token");
         }
 
-        iamToken = new TokenStore(properties.getProperty("oauth-token"));
+        ouathToken = new TokenStore(properties.getProperty("oauth-token"));
         folderToken = new TokenStore(properties.getProperty("folder-token"));
+        System.out.println(ouathToken);
+        System.out.println(folderToken);
+    }
+
+    public static List<RouteItem> makeRequest(GptRequest request) {
+        TokenStore iamToken = getIamToken(ouathToken);
+        String message = String.format(requestTemplate, request.getLatitude(), request.getLongitude(), request.getRequest());
+        return queryToGPT(iamToken, message);
     }
 
     public static TokenStore getIamToken(TokenStore oauthToken) {
@@ -58,7 +70,7 @@ public class GptHandler {
         }
     }
 
-    public static List<RouteItem> queryToGPT(String message) {
+    public static List<RouteItem> queryToGPT(TokenStore iamToken, String message) {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://llm.api.cloud.yandex.net/foundationModels/v1/completion"))
