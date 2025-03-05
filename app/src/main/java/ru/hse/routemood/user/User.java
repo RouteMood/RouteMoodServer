@@ -6,7 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "USER_") // "User" is a reserved keyword in H2 DB
 class User {
@@ -19,30 +23,6 @@ class User {
 
     public User(String login, String role) {
         this.login = login;
-        this.role = role;
-    }
-
-    public String getLogin() {
-        return this.login;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public String getRole() {
-        return this.role;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setRole(String role) {
         this.role = role;
     }
 

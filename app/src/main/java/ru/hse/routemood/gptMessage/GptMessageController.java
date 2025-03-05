@@ -56,7 +56,7 @@ class GptMessageController {
     // end::post[]
 
     // tag::post[]
-    @PostMapping("/GptMessages")
+    @PostMapping("/GptMessages/prompt-only") // TODO: just /GptMessages
     ResponseEntity<?> newGptMessage(@RequestBody String prompt) {
 
         EntityModel<GptMessage> entityModel = assembler.toModel(repository.save(new GptMessage(prompt)));

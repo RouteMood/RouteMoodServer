@@ -5,8 +5,12 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
-import ru.hse.routemood.gpt.RouteItem;
+import lombok.Getter;
+import lombok.Setter;
+import ru.hse.routemood.gpt.Route;
 
+@Getter
+@Setter
 @Entity
 public class GptMessage {
     public static final String DEFAULT_ROLE = "user";
@@ -14,38 +18,14 @@ public class GptMessage {
     private @Id @GeneratedValue Long id;
     public String text;
     public String role = DEFAULT_ROLE;
-    @OneToMany
-    public List<RouteItem> route;
+//    @ElementCollection
+//    public Route route;
 
     public GptMessage(String message) {
         text = message;
     }
 
     public GptMessage() {}
-
-    public String getRole() {
-        return role;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     @Override
     public boolean equals(Object o) {
