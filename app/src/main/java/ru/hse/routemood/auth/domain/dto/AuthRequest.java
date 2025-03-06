@@ -14,6 +14,7 @@ import lombok.Setter;
 @Builder
 @Data
 public class AuthRequest {
+
     private String password;
     private String username;
 }
