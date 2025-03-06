@@ -7,13 +7,12 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.hse.routemood.auth.models.User;
+import ru.hse.routemood.auth.domain.models.User;
 
 @Service
 public class JwtService {
@@ -25,7 +24,7 @@ public class JwtService {
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
-    public String getUserId(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -41,16 +40,18 @@ public class JwtService {
         return extractExpiration(token).before(new Date(System.currentTimeMillis()));
     }
 
-    public String generateAccessToken(User user) {
-        return generateToken(new HashMap<>(), user, refreshExpiration);
+    public String generateAccessToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof User user) {
+            claims.put("login", user.getLogin());
+        }
+
+        return generateToken(claims, userDetails, refreshExpiration);
     }
 
-    public String generateRefreshToken(User user) {
-        return generateToken(new HashMap<>(), user, jwtExpiration);
-    }
 
-    private String generateToken(Map<String, Objects> claims, User user, long expiration) {
-        return Jwts.builder().claims().add(claims).subject(user.getId().toString())
+    private String generateToken(Map<String, Object> claims, UserDetails user, long expiration) {
+        return Jwts.builder().claims().add(claims).subject(user.getUsername())
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expiration))
             .and()
@@ -63,7 +64,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails user) {
-        return user.getUsername().equals(getUserId(token)) && !isExpired(token);
+        return user.getUsername().equals(extractUsername(token)) && !isExpired(token);
     }
 
     private Claims extractAllClaims(String token) {

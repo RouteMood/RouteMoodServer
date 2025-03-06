@@ -1,7 +1,6 @@
-package ru.hse.routemood.auth.models;
+package ru.hse.routemood.auth.domain.dto;
 
 
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,5 +11,4 @@ import lombok.NoArgsConstructor;
 
 public class AuthResponse {
     private String token;
-    private UUID userId;
 }

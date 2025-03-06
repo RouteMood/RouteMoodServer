@@ -1,4 +1,4 @@
-package ru.hse.routemood.auth.models;
+package ru.hse.routemood.auth.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,5 +15,5 @@ import lombok.Setter;
 @Data
 public class AuthRequest {
     private String password;
-    private String login;
+    private String username;
 }
