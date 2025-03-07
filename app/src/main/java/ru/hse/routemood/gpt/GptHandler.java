@@ -53,17 +53,17 @@ public class GptHandler {
         apiToken = new TokenStore(properties.getProperty("route-token"));
     }
 
-    public static String formatRoute(List<RouteItem> routeItems) {
+    private static String formatRoute(List<RouteItem> routeItems) {
         return routeItems.stream()
             .map(item -> item.getLatitude() + "%2C" + item.getLongitude())
             .collect(Collectors.joining("%7C"));
     }
 
-    public static String makeCorrectUrl(List<RouteItem> routeItems) {
+    private static String makeCorrectUrl(List<RouteItem> routeItems) {
         return String.format(routeRequestTemplate, formatRoute(routeItems), apiToken.getToken());
     }
 
-    public static String makeRouteRequest(List<RouteItem> routeItems) {
+    private static String makeRouteRequest(List<RouteItem> routeItems) {
         Request request = new Request.Builder()
             .url(makeCorrectUrl(routeItems))
             .method("GET", null)
