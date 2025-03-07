@@ -8,15 +8,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Properties;
-
+import java.util.stream.Collectors;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import ru.hse.routemood.gpt.JsonWorker.RouteItem;
 import ru.hse.routemood.gptMessage.GptRequest;
 
 public class GptHandler {
+
     private static TokenStore oauthToken;
     private static TokenStore folderToken;
+    private static TokenStore apiToken;
     public static String tokenFileName;
     private static final String requestTemplate = "Создай пешеходный маршрут длиной примерно 5 км и выведи его в формате json без фразы ```json, где будет поле \"route\", в котором будет массив из координат маршрута, начинающийся в координатах %s, %s. Учти, что %s";
+    private static final String routeRequestTemplate = "https://api.geoapify.com/v1/routing?waypoints=%s&mode=walk&apiKey=%s";
+    private static final OkHttpClient client = new OkHttpClient().newBuilder().build();
+
 
     public static void init() {
         Properties properties = new Properties();
@@ -36,16 +44,65 @@ public class GptHandler {
             throw new RuntimeException("No folder-token");
         }
 
+        if (properties.getProperty("route-token") == null) {
+            throw new RuntimeException("No route-token");
+        }
+
         oauthToken = new TokenStore(properties.getProperty("oauth-token"));
         folderToken = new TokenStore(properties.getProperty("folder-token"));
-        System.out.println(oauthToken);
-        System.out.println(folderToken);
+        apiToken = new TokenStore(properties.getProperty("route-token"));
+    }
+
+    public static String formatRoute(List<RouteItem> routeItems) {
+        return routeItems.stream()
+            .map(item -> item.getLatitude() + "%2C" + item.getLongitude())
+            .collect(Collectors.joining("%7C"));
+    }
+
+    public static String makeCorrectUrl(List<RouteItem> routeItems) {
+        return String.format(routeRequestTemplate, formatRoute(routeItems), apiToken.getToken());
+    }
+
+    public static String makeRouteRequest(List<RouteItem> routeItems) {
+        Request request = new Request.Builder()
+            .url(makeCorrectUrl(routeItems))
+            .method("GET", null)
+            .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.body() != null) {
+                return response.body().string();
+            }
+
+            return null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static List<RouteItem> makeRequest(GptRequest request) {
         TokenStore iamToken = getIamToken(oauthToken);
-        String message = String.format(requestTemplate, request.getLatitude(), request.getLongitude(), request.getRequest());
-        return queryToGPT(iamToken, message);
+        if (iamToken == null) {
+            return null;
+        }
+
+        String message = String.format(requestTemplate, request.getLatitude(),
+            request.getLongitude(), request.getRequest());
+
+        List<RouteItem> items = queryToGPT(iamToken, message);
+
+        if (items == null) {
+            return null;
+        }
+
+        String json = makeRouteRequest(items);
+
+        if (json == null) {
+            return null;
+        }
+
+        return JsonWorker.applyRoute(json);
     }
 
     public static TokenStore getIamToken(TokenStore oauthToken) {
@@ -60,12 +117,12 @@ public class GptHandler {
 
             if (stringHttpResponse.statusCode() != 200) {
                 // TODO: Write better error handling
-                throw new RuntimeException("Oops, something went wrong");
+                return null;
             }
 
             return JsonWorker.getToken(stringHttpResponse.body());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -84,11 +141,11 @@ public class GptHandler {
 
             if (response.statusCode() != 200) {
                 // TODO: Write better error handling
-                throw new RuntimeException("Oops, something went wrong");
+                return null;
             }
             return JsonWorker.getGptAnswer(response.body());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 }

@@ -1,21 +1,21 @@
 package ru.hse.routemood.gpt;
 
-import jakarta.persistence.*;
-
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import java.util.Objects;
-
 import lombok.Getter;
 import lombok.Setter;
-import ru.hse.routemood.gpt.Route;
 
 @Getter
 @Setter
 @Entity
 public class GptMessage {
+
     public static final String DEFAULT_ROLE = "user";
 
-    private @Id @GeneratedValue Long id;
+    private @Id
+    @GeneratedValue Long id;
     public String text;
     public String role = DEFAULT_ROLE;
 //    @ElementCollection
@@ -25,14 +25,20 @@ public class GptMessage {
         text = message;
     }
 
-    public GptMessage() {}
+    public GptMessage() {
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         GptMessage that = (GptMessage) o;
-        return Objects.equals(id, that.id) && Objects.equals(text, that.text) && Objects.equals(role, that.role);
+        return Objects.equals(id, that.id) && Objects.equals(text, that.text) && Objects.equals(
+            role, that.role);
     }
 
     @Override
