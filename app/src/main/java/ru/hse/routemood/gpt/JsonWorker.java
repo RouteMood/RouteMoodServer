@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
@@ -45,6 +47,7 @@ public class JsonWorker {
         return new TokenStore(map.iamToken);
     }
 
+    @AllArgsConstructor
     @Getter
     public static class RouteItem {
 

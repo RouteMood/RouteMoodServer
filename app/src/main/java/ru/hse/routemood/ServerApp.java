@@ -25,7 +25,6 @@ public class ServerApp {
         }
         GptHandler.tokenFileName = args[0];
         GptHandler.init();
-//        System.out.println(;
         SpringApplication.run(ServerApp.class, args);
     }
 }

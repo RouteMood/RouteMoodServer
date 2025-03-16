@@ -11,15 +11,11 @@ import ru.hse.routemood.gpt.Route;
 
 @Getter
 @Setter
-@Entity
 public class GptMessage {
     public static final String DEFAULT_ROLE = "user";
 
-    private @Id @GeneratedValue Long id;
     public String text;
     public String role = DEFAULT_ROLE;
-//    @ElementCollection
-//    public Route route;
 
     public GptMessage(String message) {
         text = message;
@@ -32,12 +28,12 @@ public class GptMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GptMessage that = (GptMessage) o;
-        return Objects.equals(id, that.id) && Objects.equals(text, that.text) && Objects.equals(role, that.role);
+        return Objects.equals(text, that.text) && Objects.equals(role, that.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, role);
+        return Objects.hash(text, role);
     }
 
     @Override

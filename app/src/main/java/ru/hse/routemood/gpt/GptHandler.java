@@ -9,9 +9,8 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Properties;
 
-import org.antlr.v4.runtime.Token;
 import ru.hse.routemood.gpt.JsonWorker.RouteItem;
-import ru.hse.routemood.gptMessage.GptRequest;
+import ru.hse.routemood.gptRequest.GptRequest;
 
 public class GptHandler {
     private static TokenStore ouathToken;
