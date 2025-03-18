@@ -2,15 +2,15 @@ package ru.hse.routemood.gpt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.List;
 import java.util.StringJoiner;
 
+@Getter
 @AllArgsConstructor
 public class Route {
 
-    private @Getter List<RouteItem> route;
+    private List<RouteItem> route;
 
     @Override
     public String toString() {
