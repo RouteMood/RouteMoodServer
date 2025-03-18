@@ -9,7 +9,6 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Properties;
 
-import ru.hse.routemood.gpt.JsonWorker.RouteItem;
 import ru.hse.routemood.gptRequest.GptRequest;
 
 public class GptHandler {
@@ -42,7 +41,7 @@ public class GptHandler {
         System.out.println(folderToken);
     }
 
-    public static List<RouteItem> makeRequest(GptRequest request) {
+    public static Route makeRequest(GptRequest request) {
         TokenStore iamToken = getIamToken(ouathToken);
         String message = String.format(requestTemplate, request.getLatitude(), request.getLongitude(), request.getRequest());
         return queryToGPT(iamToken, message);
@@ -69,7 +68,7 @@ public class GptHandler {
         }
     }
 
-    public static List<RouteItem> queryToGPT(TokenStore iamToken, String message) {
+    public static Route queryToGPT(TokenStore iamToken, String message) {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://llm.api.cloud.yandex.net/foundationModels/v1/completion"))

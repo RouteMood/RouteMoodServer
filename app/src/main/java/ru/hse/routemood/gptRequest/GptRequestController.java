@@ -13,7 +13,7 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.routemood.gpt.GptHandler;
-import ru.hse.routemood.gpt.JsonWorker.RouteItem;
+import ru.hse.routemood.gpt.Route;
 
 @RestController
 @AllArgsConstructor
@@ -23,7 +23,7 @@ public class GptRequestController {
     private final GptRequestModelAssembler assembler;
 
     @GetMapping("/gpt-request")
-    ResponseEntity<List<RouteItem>> newGptRequest(
+    ResponseEntity<Route> newGptRequest(
         @RequestParam(name = "longitude") Double longitude,
         @RequestParam(name = "latitude") Double latitude,
         @RequestParam(name = "request") String request) {
@@ -44,7 +44,7 @@ public class GptRequestController {
 
     // tag::post[]
     @PostMapping("/gpt-request")
-    ResponseEntity<List<RouteItem>> newGptRequest(@RequestBody GptRequest request) {
+    ResponseEntity<Route> newGptRequest(@RequestBody GptRequest request) {
         return ResponseEntity.ok(GptHandler.makeRequest(
                 GptRequest.builder().latitude(request.getLatitude())
                         .longitude(request.getLongitude())
@@ -54,7 +54,7 @@ public class GptRequestController {
     // end::post[]
 
     @GetMapping("/gpt-fictive-message")
-    ResponseEntity<List<RouteItem>> fictiveMessage(
+    ResponseEntity<Route> fictiveMessage(
             @RequestParam(name = "longitude") Double longitude,
             @RequestParam(name = "latitude") Double latitude,
             @RequestParam(name = "request") String request) {
@@ -68,12 +68,12 @@ public class GptRequestController {
                 {59.935008, 30.409826},
                 {59.93603, 30.412245}};
 
-        List<RouteItem> result = new ArrayList<>();
+        List<Route.RouteItem> result = new ArrayList<>();
         for (Double[] doubles : array) {
-            result.add(new RouteItem(doubles[0], doubles[1]));
+            result.add(new Route.RouteItem(doubles[0], doubles[1]));
         }
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new Route(result));
     }
 
     @GetMapping("/gpt-requests/{id}")

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import ru.hse.routemood.gpt.Route;
+
 
 public class JsonWorker {
 
@@ -47,35 +49,7 @@ public class JsonWorker {
         return new TokenStore(map.iamToken);
     }
 
-    @AllArgsConstructor
-    @Getter
-    public static class RouteItem {
-
-        private double latitude;
-        private double longitude;
-
-        @Override
-        public String toString() {
-            return "[latitude = " + latitude + ", longitude = " + longitude + "]";
-        }
-    }
-
-    @Getter
-    public static class RouteAnswer {
-
-        private List<RouteItem> route;
-
-        @Override
-        public String toString() {
-            StringJoiner result = new StringJoiner("\n");
-            for (RouteItem it : route) {
-                result.add(it.toString());
-            }
-            return result.toString();
-        }
-    }
-
-    public static List<RouteItem> getGptAnswer(String response) {
+    public static Route getGptAnswer(String response) {
         AnswerForQuery answerForQuery = new Gson().fromJson(response, AnswerForQuery.class);
         if (answerForQuery.result.alternatives.getFirst() == null) {
             throw new RuntimeException("Bad answer from gpt, try later");
@@ -85,8 +59,6 @@ public class JsonWorker {
             .mapToObj(x -> String.valueOf((char) x)).filter(x -> !x.equals("`"))
             .collect(Collectors.joining());
 
-        RouteAnswer answer = new Gson().fromJson(result, RouteAnswer.class);
-
-        return answer.getRoute();
+        return new Gson().fromJson(result, Route.class);
     }
 }
