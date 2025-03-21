@@ -1,5 +1,12 @@
 package ru.hse.routemood.gpt;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import ru.hse.routemood.gpt.JsonWorker.Route;
+import ru.hse.routemood.gpt.JsonWorker.RouteItem;
+import ru.hse.routemood.gptRequest.GptRequest;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -9,12 +16,6 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import ru.hse.routemood.gpt.JsonWorker.Route;
-import ru.hse.routemood.gpt.JsonWorker.RouteItem;
-import ru.hse.routemood.gptMessage.GptRequest;
 
 public class GptHandler {
 
