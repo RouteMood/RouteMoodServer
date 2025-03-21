@@ -1,7 +1,7 @@
 package ru.hse.routemood;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.boot.test.context.SpringBootTest;
 
 class ServerAppTest {
     @Test void appHasAGreeting() {
