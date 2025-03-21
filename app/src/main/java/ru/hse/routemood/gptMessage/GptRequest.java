@@ -14,6 +14,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class GptRequest {
+
     private String request;
     private Double longitude;
     private Double latitude;

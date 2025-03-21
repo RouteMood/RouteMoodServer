@@ -55,8 +55,7 @@ public class GptHandler {
     }
 
     private static String formatRoute(List<RouteItem> routeItems) {
-        return routeItems.stream()
-            .map(item -> item.getLatitude() + "%2C" + item.getLongitude())
+        return routeItems.stream().map(item -> item.getLatitude() + "%2C" + item.getLongitude())
             .collect(Collectors.joining("%7C"));
     }
 
@@ -65,9 +64,7 @@ public class GptHandler {
     }
 
     private static String makeRouteRequest(List<RouteItem> routeItems) {
-        Request request = new Request.Builder()
-            .url(makeCorrectUrl(routeItems))
-            .method("GET", null)
+        Request request = new Request.Builder().url(makeCorrectUrl(routeItems)).method("GET", null)
             .build();
 
         try {
@@ -106,7 +103,7 @@ public class GptHandler {
         return Route.builder().route(JsonWorker.applyRoute(json)).build();
     }
 
-    public static TokenStore getIamToken(TokenStore oauthToken) {
+    private static TokenStore getIamToken(TokenStore oauthToken) {
         try (HttpClient client = HttpClient.newHttpClient();) {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://iam.api.cloud.yandex.net/iam/v1/tokens"))
@@ -127,15 +124,14 @@ public class GptHandler {
         }
     }
 
-    public static List<RouteItem> queryToGPT(TokenStore iamToken, String message) {
+    private static List<RouteItem> queryToGPT(TokenStore iamToken, String message) {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://llm.api.cloud.yandex.net/foundationModels/v1/completion"))
                 .POST(HttpRequest.BodyPublishers.ofString(
                     JsonBuilder.getQueryJson(folderToken, message)))
                 .setHeader("Authorization", "Bearer " + iamToken.getToken())
-                .setHeader("Content-type", "application/json")
-                .build();
+                .setHeader("Content-type", "application/json").build();
 
             HttpResponse<String> response = client.send(request,
                 HttpResponse.BodyHandlers.ofString());
