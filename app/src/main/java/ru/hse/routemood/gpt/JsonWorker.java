@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 
@@ -46,10 +48,13 @@ public class JsonWorker {
     }
 
     @Getter
+    @AllArgsConstructor
+    @Builder
     public static class RouteItem {
 
         private double latitude;
         private double longitude;
+
 
         @Override
         public String toString() {
@@ -85,5 +90,38 @@ public class JsonWorker {
         RouteAnswer answer = new Gson().fromJson(result, RouteAnswer.class);
 
         return answer.getRoute();
+    }
+
+
+    private static class RouteFeature {
+
+        public List<FeatureElement> features;
+    }
+
+    private static class FeatureElement {
+
+        public Geometry geometry;
+    }
+
+    private static class Geometry {
+
+        public List<List<List<Double>>> coordinates;
+    }
+
+    public static List<RouteItem> applyRoute(String json) {
+        RouteFeature items = new Gson().fromJson(json, RouteFeature.class);
+        if (items.features == null || items.features.getFirst() == null) {
+            return null;
+        }
+
+        return items.features.getFirst().geometry.coordinates.stream()
+            .flatMap(
+                legs ->
+                    legs.stream().map(item -> RouteItem.builder()
+                        .latitude(item.getLast())
+                        .longitude(item.getFirst())
+                        .build())
+            )
+            .toList();
     }
 }
