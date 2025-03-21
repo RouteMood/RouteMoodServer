@@ -63,6 +63,7 @@ public class JsonWorker {
     }
 
     @Getter
+    @Builder
     public static class Route {
 
         private List<RouteItem> route;

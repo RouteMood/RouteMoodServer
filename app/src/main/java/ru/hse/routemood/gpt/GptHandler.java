@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import ru.hse.routemood.gpt.JsonWorker.Route;
 import ru.hse.routemood.gpt.JsonWorker.RouteItem;
 import ru.hse.routemood.gptMessage.GptRequest;
 
@@ -81,7 +82,7 @@ public class GptHandler {
         }
     }
 
-    public static List<RouteItem> makeRequest(GptRequest request) {
+    public static Route makeRequest(GptRequest request) {
         TokenStore iamToken = getIamToken(oauthToken);
         if (iamToken == null) {
             return null;
@@ -102,7 +103,7 @@ public class GptHandler {
             return null;
         }
 
-        return JsonWorker.applyRoute(json);
+        return Route.builder().route(JsonWorker.applyRoute(json)).build();
     }
 
     public static TokenStore getIamToken(TokenStore oauthToken) {
