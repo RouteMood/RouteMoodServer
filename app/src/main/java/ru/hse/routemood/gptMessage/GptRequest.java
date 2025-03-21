@@ -1,8 +1,5 @@
-package ru.hse.routemood.gptRequest;
+package ru.hse.routemood.gptMessage;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Entity
 public class GptRequest {
-    private @Id
-    @GeneratedValue Long id;
+
     private String request;
     private Double longitude;
     private Double latitude;

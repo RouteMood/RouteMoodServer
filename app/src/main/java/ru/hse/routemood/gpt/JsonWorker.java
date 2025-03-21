@@ -5,11 +5,9 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-
-import ru.hse.routemood.gpt.Route;
 
 
 public class JsonWorker {
@@ -49,7 +47,38 @@ public class JsonWorker {
         return new TokenStore(map.iamToken);
     }
 
-    public static Route getGptAnswer(String response) {
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class RouteItem {
+
+        private double latitude;
+        private double longitude;
+
+
+        @Override
+        public String toString() {
+            return "[latitude = " + latitude + ", longitude = " + longitude + "]";
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class Route {
+
+        private List<RouteItem> route;
+
+        @Override
+        public String toString() {
+            StringJoiner result = new StringJoiner("\n");
+            for (RouteItem it : route) {
+                result.add(it.toString());
+            }
+            return result.toString();
+        }
+    }
+
+    public static List<RouteItem> getGptAnswer(String response) {
         AnswerForQuery answerForQuery = new Gson().fromJson(response, AnswerForQuery.class);
         if (answerForQuery.result.alternatives.getFirst() == null) {
             throw new RuntimeException("Bad answer from gpt, try later");
@@ -59,6 +88,41 @@ public class JsonWorker {
             .mapToObj(x -> String.valueOf((char) x)).filter(x -> !x.equals("`"))
             .collect(Collectors.joining());
 
-        return new Gson().fromJson(result, Route.class);
+        Route answer = new Gson().fromJson(result, Route.class);
+
+        return answer.getRoute();
+    }
+
+
+    private static class RouteFeature {
+
+        public List<FeatureElement> features;
+    }
+
+    private static class FeatureElement {
+
+        public Geometry geometry;
+    }
+
+    private static class Geometry {
+
+        public List<List<List<Double>>> coordinates;
+    }
+
+    public static List<RouteItem> applyRoute(String json) {
+        RouteFeature items = new Gson().fromJson(json, RouteFeature.class);
+        if (items.features == null || items.features.getFirst() == null) {
+            return null;
+        }
+
+        return items.features.getFirst().geometry.coordinates.stream()
+            .flatMap(
+                legs ->
+                    legs.stream().map(item -> RouteItem.builder()
+                        .latitude(item.getLast())
+                        .longitude(item.getFirst())
+                        .build())
+            )
+            .toList();
     }
 }
