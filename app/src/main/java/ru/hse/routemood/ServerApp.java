@@ -2,6 +2,7 @@ package ru.hse.routemood;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import ru.hse.routemood.gpt.GptHandler;
 
 @SpringBootApplication
 public class ServerApp {

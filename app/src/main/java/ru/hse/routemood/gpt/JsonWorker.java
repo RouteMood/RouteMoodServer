@@ -63,7 +63,7 @@ public class JsonWorker {
     }
 
     @Getter
-    public static class RouteAnswer {
+    public static class Route {
 
         private List<RouteItem> route;
 
@@ -87,7 +87,7 @@ public class JsonWorker {
             .mapToObj(x -> String.valueOf((char) x)).filter(x -> !x.equals("`"))
             .collect(Collectors.joining());
 
-        RouteAnswer answer = new Gson().fromJson(result, RouteAnswer.class);
+        Route answer = new Gson().fromJson(result, Route.class);
 
         return answer.getRoute();
     }
