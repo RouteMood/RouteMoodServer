@@ -1,4 +1,4 @@
-package ru.hse.routemood.auth.config;
+package ru.hse.routemood.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -27,11 +27,13 @@ public class AuthController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<AuthResponse> registerUser(@RequestBody RegisterRequest request) {
+        System.out.println("Get request: " + request.getLogin());
         AuthResponse result = authService.registerUser(request);
         if (result == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
+        System.out.println("Get request: " + request.getLogin());
         return ResponseEntity.ok(result);
     }
 

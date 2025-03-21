@@ -1,4 +1,4 @@
-package ru.hse.routemood.auth.config;
+package ru.hse.routemood.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
