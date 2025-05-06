@@ -30,7 +30,7 @@ public class RatingController {
             "Get saveRoute request: authorUsername = " + request.getAuthorUsername() + "; route = "
                 + request.getRoute());
 
-        // check existence
+        //TODO check existence
         RatingItem response = ratingService.save(request);
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -41,9 +41,10 @@ public class RatingController {
     @PatchMapping(path = "/add-rate")
     public ResponseEntity<RatingResponse> addRate(@RequestBody RateRequest request) {
         System.out.println(
-            "Get addRate request: id = " + request.getId() + "rate = " + request.getRate());
+            "Get addRate request: id = " + request.getId() + "; rate = " + request.getRate());
 
-        RatingResponse response = ratingService.addRate(request.getId(), request.getRate());
+        RatingResponse response = ratingService.addRate(request.getId(), request.getUsername(),
+            request.getRate());
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -52,7 +53,7 @@ public class RatingController {
 
     @GetMapping(path = "/get-by-id")
     public ResponseEntity<RatingResponse> route(@RequestParam(name = "id") UUID routeId) {
-        System.out.println("get route request: " + routeId);
+        System.out.println("Get route request: " + routeId);
         RatingResponse response = ratingService.findById(routeId);
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

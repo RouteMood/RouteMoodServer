@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +36,8 @@ public class RatingItem {
     @Builder.Default
     private int ratesSum = 0;
     @Builder.Default
-    private int ratesCount = 0; // TODO: Map<User, Integer> rates;
+    @ElementCollection
+    private Map<String, Integer> usernameToRate = new HashMap<>();
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -57,6 +60,6 @@ public class RatingItem {
     }
 
     public double getRating() {
-        return (double) ratesSum / ratesCount;
+        return (double) ratesSum / usernameToRate.size();
     }
 }

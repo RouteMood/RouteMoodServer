@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class RateRequest {
 
     public UUID id;
+    public String username;
     public int rate;
 }
 

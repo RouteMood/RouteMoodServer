@@ -13,5 +13,5 @@ public interface RatingServiceRepository extends JpaRepository<RatingItem, UUID>
     @Override
     Optional<RatingItem> findById(@NonNull UUID id);
 
-    List<RatingItem> findAllByAuthorUsername(String authorUsername);
+    List<RatingItem> findAllByAuthorUsername(@NonNull String authorUsername);
 }
