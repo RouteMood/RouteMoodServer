@@ -1,5 +1,6 @@
 package ru.hse.routemood.rating.dto;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,11 +18,17 @@ import ru.hse.routemood.rating.models.RatingItem;
 @NoArgsConstructor
 public class RatingResponse {
 
+    public UUID id;
+    public String name;
+    public String description;
     public double rating;
     public String authorUsername;
     public Route route;
 
     public RatingResponse(RatingItem ratingItem) {
+        this.id = ratingItem.getId();
+        this.name = ratingItem.getName();
+        this.description = ratingItem.getDescription();
         this.rating = ratingItem.getRating();
         this.authorUsername = ratingItem.getAuthorUsername();
         this.route = RatingItem.toRoute(ratingItem.getRoute());

@@ -30,6 +30,8 @@ import ru.hse.routemood.gpt.JsonWorker.RouteItem;
 @ToString
 public class RatingItem {
 
+    public String name;
+    public String description;
     public String authorUsername;
     @ElementCollection
     public List<Double> route; // [latitude_0, longitude_0, latitude_1, longitude_1, ...]

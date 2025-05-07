@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.routemood.rating.dto.RateRequest;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
-import ru.hse.routemood.rating.models.RatingItem;
 
 @RestController
 @RequestMapping(path = "/rating")
@@ -25,13 +24,13 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping(path = "/save")
-    public ResponseEntity<RatingItem> saveRoute(@RequestBody RatingRequest request) {
+    public ResponseEntity<RatingResponse> saveRoute(@RequestBody RatingRequest request) {
         System.out.println(
             "Get saveRoute request: authorUsername = " + request.getAuthorUsername() + "; route = "
                 + request.getRoute());
 
         //TODO check existence
-        RatingItem response = ratingService.save(request);
+        RatingResponse response = ratingService.save(request);
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

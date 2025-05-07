@@ -16,7 +16,8 @@ import ru.hse.routemood.gpt.JsonWorker.Route;
 @NoArgsConstructor
 public class RatingRequest {
 
+    public String name;
+    public String description;
     public String authorUsername;
     public Route route;
 }
-

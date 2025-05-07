@@ -24,11 +24,13 @@ public class RatingService {
         return result;
     }
 
-    public RatingItem save(@NonNull RatingRequest request) {
-        return ratingServiceRepository.save(RatingItem.builder()
+    public RatingResponse save(@NonNull RatingRequest request) {
+        return new RatingResponse(ratingServiceRepository.save(RatingItem.builder()
+            .name(request.getName())
+            .description(request.getDescription())
             .authorUsername(request.getAuthorUsername())
             .route(RatingItem.fromRoute(request.getRoute()))
-            .build());
+            .build()));
     }
 
     public RatingResponse addRate(@NonNull UUID routeId, @NonNull String username,
