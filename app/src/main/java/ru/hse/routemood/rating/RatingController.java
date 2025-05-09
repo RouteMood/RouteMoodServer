@@ -25,15 +25,15 @@ public class RatingController {
 
     @PostMapping(path = "/save")
     public ResponseEntity<RatingResponse> saveRoute(@RequestBody RatingRequest request) {
-        System.out.println(
-            "Get saveRoute request: authorUsername = " + request.getAuthorUsername() + "; route = "
-                + request.getRoute());
+        System.out.println("Get saveRoute request: " + request);
 
         //TODO check existence
         RatingResponse response = ratingService.save(request);
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+        System.out.println("Save route response: " + response);
+        System.out.println("ResponseEntity: " + ResponseEntity.ok(response));
         return ResponseEntity.ok(response);
     }
 
