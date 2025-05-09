@@ -33,6 +33,14 @@ public class RatingService {
             .build()));
     }
 
+    public boolean delete(@NonNull UUID id) {
+        if (ratingServiceRepository.existsById(id)) {
+            ratingServiceRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
     public RatingResponse addRate(@NonNull UUID routeId, @NonNull String username,
         @NonNull int rate) {
         RatingItem item = ratingServiceRepository.findById(routeId).orElse(null);

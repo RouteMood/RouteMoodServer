@@ -5,6 +5,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,12 @@ public class RatingController {
         System.out.println("Save route response: " + response);
         System.out.println("ResponseEntity: " + ResponseEntity.ok(response));
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping(path = "/delete")
+    public ResponseEntity<Void> deleteRating(@RequestParam(name = "id") UUID id) {
+        boolean isDeleted = ratingService.delete(id);
+        return isDeleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @PatchMapping(path = "/add-rate")
