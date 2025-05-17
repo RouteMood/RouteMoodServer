@@ -13,6 +13,11 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 application:
   security:
@@ -22,3 +27,6 @@ application:
       refresh-token:
         expiration: 604800000
 
+image:
+  storage:
+    path: /tmp/routemood/images
