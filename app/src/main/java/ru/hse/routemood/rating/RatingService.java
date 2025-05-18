@@ -56,6 +56,12 @@ public class RatingService {
         return new RatingResponse(item);
     }
 
+    public Integer getUserRate(@NonNull UUID routeId, @NonNull String username) {
+        RatingItem item = ratingServiceRepository.findById(routeId).orElse(null);
+        return item != null && item.getUsernameToRate().containsKey(username)
+            ? item.getUsernameToRate().get(username) : null;
+    }
+
     public RatingResponse findById(@NonNull UUID id) {
         RatingItem item = ratingServiceRepository.findById(id).orElse(null);
         return item == null ? null : new RatingResponse(item);

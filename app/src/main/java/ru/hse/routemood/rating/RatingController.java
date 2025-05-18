@@ -57,6 +57,18 @@ public class RatingController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(path = "/get-user-rate")
+    public ResponseEntity<Integer> getUserRate(@RequestParam(name = "routeId") UUID routeId,
+        @RequestParam(name = "username") String username) {
+        System.out.println("Get user rate request: id = " + routeId + "; username = " + username);
+        Integer response = ratingService.getUserRate(routeId, username);
+        if (response == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+
     @GetMapping(path = "/get-by-id")
     public ResponseEntity<RatingResponse> route(@RequestParam(name = "id") UUID routeId) {
         System.out.println("Get route request: " + routeId);
