@@ -13,6 +13,11 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 200MB
+      max-file-size: 200MB
 
 application:
   security:
@@ -21,4 +26,5 @@ application:
       expiration: 604800000
       refresh-token:
         expiration: 604800000
-
+server:
+  types: video/mpeg4-generic, video/mpeg, video/mp4
