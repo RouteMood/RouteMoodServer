@@ -37,4 +37,13 @@ public class UserService {
 
         return save(user);
     }
+
+    public User createOrSave(User user) {
+        User result = createUser(user);
+        if (result == null) {
+            result = userServiceRepository.findByUsername(user.getUsername()).orElse(null);
+        }
+
+        return result;
+    }
 }

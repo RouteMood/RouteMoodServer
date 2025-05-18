@@ -30,6 +30,7 @@ public class SecurityConfiguration {
         "/api/register",
         "/api/hell2",
         "/api/ads/**"
+        "/api/google/auth"
     };
 
     @Bean

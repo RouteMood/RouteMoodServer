@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.hse.routemood.auth.domain.dto.AuthRequest;
 import ru.hse.routemood.auth.domain.dto.AuthResponse;
+import ru.hse.routemood.auth.domain.dto.RefreshRequest;
 import ru.hse.routemood.auth.domain.dto.RegisterRequest;
 import ru.hse.routemood.auth.domain.models.Role;
 import ru.hse.routemood.auth.domain.models.User;
@@ -28,12 +29,13 @@ public class AuthService {
             .role(Role.USER)
             .build();
 
+        user.setToken(jwtService.generateRefreshToken());
         user = userService.createUser(user);
         if (user == null) {
             return null;
         }
 
-        return new AuthResponse(jwtService.generateAccessToken(user));
+        return new AuthResponse(jwtService.generateAccessToken(user), user.getToken());
     }
 
     public AuthResponse loginUser(AuthRequest request) {
@@ -47,6 +49,25 @@ public class AuthService {
             return null;
         }
 
-        return new AuthResponse(jwtService.generateAccessToken(user));
+        return new AuthResponse(jwtService.generateAccessToken(user), user.getToken());
+    }
+
+    public AuthResponse refreshTokens(RefreshRequest request) {
+        User user = userService.findByUsername(request.getUsername());
+        if (user == null) {
+            return null;
+        }
+
+        if (!user.getToken().equals(request.getRefreshToken())) {
+            return null;
+        }
+
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken();
+
+        user.setToken(refreshToken);
+        userService.save(user);
+
+        return new AuthResponse(accessToken, refreshToken);
     }
 }
