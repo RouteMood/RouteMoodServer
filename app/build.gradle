@@ -39,6 +39,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -58,7 +61,17 @@ repositories {
     mavenCentral()
 }
 
-
+test {
+    useJUnitPlatform()
+    jvmArgs = [
+            "--add-opens=java.base/java.lang=ALL-UNNAMED",
+            "-javaagent:${classpath.find { it.name.contains("byte-buddy-agent") }.absolutePath}",
+            "-XX:+EnableDynamicAgentLoading"
+    ]
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
 tasks.named('test') {
     useJUnitPlatform()
 }

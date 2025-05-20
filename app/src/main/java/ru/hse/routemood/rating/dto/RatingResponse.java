@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 import ru.hse.routemood.gpt.JsonWorker.Route;
 import ru.hse.routemood.rating.models.RatingItem;
 
@@ -24,6 +25,7 @@ public class RatingResponse {
     public double rating;
     public String authorUsername;
     public Route route;
+    public Integer rate;
 
     public RatingResponse(RatingItem ratingItem) {
         this.id = ratingItem.getId();
@@ -32,5 +34,10 @@ public class RatingResponse {
         this.rating = ratingItem.getRating();
         this.authorUsername = ratingItem.getAuthorUsername();
         this.route = RatingItem.toRoute(ratingItem.getRoute());
+    }
+
+    public RatingResponse(RatingItem ratingItem, @NonNull String username) {
+        this(ratingItem);
+        this.rate = ratingItem.getUsernameToRate().get(username);
     }
 }
