@@ -23,13 +23,12 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping(path = "/save")
-    public ResponseEntity<ImageSaveResponse> saveImage(@RequestPart("file") MultipartFile file,
-        @RequestPart("mimeType") String mimeType) {
-        System.out.println("Get saveImage request: mimeType = " + mimeType);
+    public ResponseEntity<ImageSaveResponse> saveImage(@RequestPart("file") MultipartFile file) {
+        System.out.println("Get saveImage request");
 
-        ImageSaveResponse response = imageService.save(file, mimeType);
+        ImageSaveResponse response = imageService.save(file);
         if (response == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return ResponseEntity.ok(response);
     }
@@ -37,16 +36,28 @@ public class ImageController {
     @GetMapping(path = "/load")
     public ResponseEntity<ImageLoadResponse> loadImage(@RequestParam(name = "id") UUID imageId) {
         System.out.println("Get loadImage request: " + imageId);
-        ImageLoadResponse response = imageService.load(imageId);
-        if (response == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        try {
+            ImageLoadResponse response = imageService.load(imageId);
+            if (response == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.out.println("Can't load image: " + imageId);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(path = "/delete")
-    public ResponseEntity<Void> deleteRating(@RequestParam(name = "id") UUID id) {
-        boolean isDeleted = imageService.delete(id);
+    public ResponseEntity<Void> deleteImage(@RequestParam(name = "id") UUID id) {
+        System.out.println("Delete image: " + id);
+        boolean isDeleted;
+        try {
+            isDeleted = imageService.delete(id);
+        } catch (Exception e) {
+            System.out.println("Can't delete image: " + id);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return isDeleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }
