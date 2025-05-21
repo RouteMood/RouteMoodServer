@@ -49,8 +49,15 @@ public class ImageController {
     }
 
     @DeleteMapping(path = "/delete")
-    public ResponseEntity<Void> deleteRating(@RequestParam(name = "id") UUID id) {
-        boolean isDeleted = imageService.delete(id);
+    public ResponseEntity<Void> deleteImage(@RequestParam(name = "id") UUID id) {
+        System.out.println("Delete image: " + id);
+        boolean isDeleted;
+        try {
+            isDeleted = imageService.delete(id);
+        } catch (Exception e) {
+            System.out.println("Can't delete image: " + id);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return isDeleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

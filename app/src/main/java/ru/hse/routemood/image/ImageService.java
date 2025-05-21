@@ -23,7 +23,7 @@ public class ImageService {
     @Value("${image.storage.path}")
     private String storagePath;
 
-    private String saveResource(MultipartFile file, String fileName) throws IOException {
+    private String saveFile(MultipartFile file, String fileName) throws IOException {
         Path uploadPath = Paths.get(storagePath);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -44,7 +44,7 @@ public class ImageService {
 
         String filePath;
         try {
-            filePath = saveResource(file, fileName);
+            filePath = saveFile(file, fileName);
         } catch (IOException e) {
             // TODO more useful action
             return null;
@@ -72,8 +72,12 @@ public class ImageService {
             .build();
     }
 
-    public boolean delete(@NonNull UUID id) {
+    public boolean delete(@NonNull UUID id) throws IOException {
         if (imageServiceRepository.existsById(id)) {
+            Image image = findById(id);
+
+            Files.deleteIfExists(Paths.get(image.getFilePath()));
+
             imageServiceRepository.deleteById(id);
             return true;
         }
