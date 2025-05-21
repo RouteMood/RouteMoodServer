@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.routemood.auth.domain.dto.AuthRequest;
 import ru.hse.routemood.auth.domain.dto.AuthResponse;
+import ru.hse.routemood.auth.domain.dto.RefreshRequest;
 import ru.hse.routemood.auth.domain.dto.RegisterRequest;
 import ru.hse.routemood.auth.domain.models.User;
 import ru.hse.routemood.auth.repository.UserServiceRepository;
@@ -40,6 +41,16 @@ public class AuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<AuthResponse> loginUser(@RequestBody AuthRequest request) {
         AuthResponse result = authService.loginUser(request);
+        if (result == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping(path = "/refresh")
+    public ResponseEntity<AuthResponse> loginUser(@RequestBody RefreshRequest request) {
+        AuthResponse result = authService.refreshTokens(request);
         if (result == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

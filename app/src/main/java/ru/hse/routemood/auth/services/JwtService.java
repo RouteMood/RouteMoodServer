@@ -49,6 +49,10 @@ public class JwtService {
         return generateToken(claims, userDetails, refreshExpiration);
     }
 
+    public String generateRefreshToken() {
+        return java.util.UUID.randomUUID().toString();
+    }
+
 
     private String generateToken(Map<String, Object> claims, UserDetails user, long expiration) {
         return Jwts.builder().claims().add(claims).subject(user.getUsername())
