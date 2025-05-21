@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hse.routemood.auth.services.JwtService;
 import ru.hse.routemood.rating.dto.RateRequest;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
@@ -23,6 +25,7 @@ import ru.hse.routemood.rating.dto.RatingResponse;
 public class RatingController {
 
     private final RatingService ratingService;
+    private final JwtService jwtService;
 
     @PostMapping(path = "/save")
     public ResponseEntity<RatingResponse> saveRoute(@RequestBody RatingRequest request) {
@@ -57,22 +60,11 @@ public class RatingController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(path = "/get-user-rate")
-    public ResponseEntity<Integer> getUserRate(@RequestParam(name = "routeId") UUID routeId,
-        @RequestParam(name = "username") String username) {
-        System.out.println("Get user rate request: id = " + routeId + "; username = " + username);
-        Integer response = ratingService.getUserRate(routeId, username);
-        if (response == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(response);
-    }
-
-
     @GetMapping(path = "/get-by-id")
-    public ResponseEntity<RatingResponse> route(@RequestParam(name = "id") UUID routeId) {
+    public ResponseEntity<RatingResponse> route(@RequestParam(name = "id") UUID routeId,
+        @RequestHeader("Authorization") String authHeader) {
         System.out.println("Get route request: " + routeId);
-        RatingResponse response = ratingService.findById(routeId);
+        RatingResponse response = ratingService.findById(routeId, getUsername(authHeader));
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -81,9 +73,10 @@ public class RatingController {
 
     @GetMapping(path = "/get-by-author")
     public ResponseEntity<List<RatingResponse>> listRoutesByAuthorUsername(
-        @RequestParam(name = "author") String authorUsername) {
+        @RequestParam(name = "author") String authorUsername,
+        @RequestHeader("Authorization") String authHeader) {
         System.out.println("get route request: " + authorUsername);
-        List<RatingResponse> response = ratingService.findAllByAuthorUsername(authorUsername);
+        List<RatingResponse> response = ratingService.findAllByAuthorUsername(authorUsername, getUsername(authHeader));
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -91,8 +84,16 @@ public class RatingController {
     }
 
     @GetMapping(path = "/get-all")
-    public ResponseEntity<List<RatingResponse>> listRoutes() {
+    public ResponseEntity<List<RatingResponse>> listRoutes(
+        @RequestHeader("Authorization") String authHeader) {
         System.out.println("Get listRoutes request");
-        return ResponseEntity.ok(ratingService.findAll());
+        return ResponseEntity.ok(ratingService.findAll(getUsername(authHeader)));
     }
+    
+    
+    private String getUsername(String authHeader) {
+        return jwtService.extractUsername(authHeader.substring(7));
+    }
+
+
 }
