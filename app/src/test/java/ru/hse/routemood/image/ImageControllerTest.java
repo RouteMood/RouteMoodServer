@@ -1,6 +1,13 @@
 package ru.hse.routemood.image;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +20,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hse.routemood.image.dto.ImageLoadResponse;
 import ru.hse.routemood.image.dto.ImageSaveResponse;
-import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ImageControllerTest {
@@ -34,9 +37,9 @@ class ImageControllerTest {
     void setUp() {
         testId = UUID.randomUUID();
         testFile = new MockMultipartFile(
-            "file", 
-            "test.jpg", 
-            "image/jpeg", 
+            "file",
+            "test.jpg",
+            "image/jpeg",
             "test data".getBytes()
         );
     }
@@ -66,7 +69,7 @@ class ImageControllerTest {
     @Test
     void loadImage_Success() throws Exception {
         ImageLoadResponse mockResponse = new ImageLoadResponse(
-            "test".getBytes(), 
+            "test".getBytes(),
             "image/jpeg"
         );
         when(imageService.load(testId)).thenReturn(mockResponse);

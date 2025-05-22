@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +22,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,13 +39,18 @@ import ru.hse.routemood.image.models.Image;
 @ExtendWith(MockitoExtension.class)
 class ImageServiceTest {
 
-    private final String testStoragePath = "test-storage";
+    private static final String testStoragePath = "test-storage";
     @Mock
     private ImageServiceRepository imageServiceRepository;
     @InjectMocks
     private ImageService imageService;
     private MultipartFile testFile;
     private Image testImage;
+
+    @AfterAll
+    static void cleanUp() throws IOException {
+        FileUtils.deleteDirectory(new File(testStoragePath));
+    }
 
     private Object invokePrivateMethod(String methodName, Object... params)
         throws InvocationTargetException, IllegalAccessException {

@@ -1,7 +1,10 @@
 package ru.hse.routemood.rating;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,14 +20,12 @@ import ru.hse.routemood.rating.models.RatingItem;
 @DataJpaTest
 class RatingServiceRepositoryTest {
 
+    private final String user1 = "user1";
     @Autowired
     private RatingServiceRepository repository;
-
     @Autowired
     private TestEntityManager entityManager;
-
     private UUID existingId;
-    private final String user1 = "user1";
 
     @BeforeEach
     void setUp() {
@@ -54,31 +55,32 @@ class RatingServiceRepositoryTest {
     void testFindById_ExistingId_ReturnsItem() {
         Optional<RatingItem> found = repository.findById(existingId);
 
-        assertThat(found).isPresent();
-        assertThat(found.get().getId()).isEqualTo(existingId);
-        assertThat(found.get().getName()).isEqualTo("Route 1");
+        assertTrue(found.isPresent());
+        assertEquals(existingId, found.get().getId());
+        assertEquals("Route 1", found.get().getName());
+        assertEquals(user1, found.get().getAuthorUsername());
     }
 
     @Test
     void testFindById_NonExistingId_ReturnsEmpty() {
         Optional<RatingItem> found = repository.findById(UUID.randomUUID());
 
-        assertThat(found).isEmpty();
+        assertTrue(found.isEmpty());
     }
 
     @Test
     void testFindAllByAuthorUsername_ExistingAuthor_ReturnsItems() {
         List<RatingItem> items = repository.findAllByAuthorUsername(user1);
 
-        assertThat(items).hasSize(3);
-        assertThat(items).allMatch(item -> user1.equals(item.getAuthorUsername()));
+        assertEquals(3, items.size());
+        assertTrue(items.stream().allMatch(item -> user1.equals(item.getAuthorUsername())));
     }
 
     @Test
     void testFindAllByAuthorUsername_NonExistingAuthor_ReturnsEmpty() {
         List<RatingItem> items = repository.findAllByAuthorUsername("unknown");
 
-        assertThat(items).isEmpty();
+        assertTrue(items.isEmpty());
     }
 
     @Test
@@ -92,9 +94,9 @@ class RatingServiceRepositoryTest {
         RatingItem saved = repository.save(newItem);
         RatingItem found = entityManager.find(RatingItem.class, saved.getId());
 
-        assertThat(found).isNotNull();
-        assertThat(found.getName()).isEqualTo("New Route");
-        assertThat(found.getAuthorUsername()).isEqualTo(user2);
+        assertNotNull(found);
+        assertEquals("New Route", found.getName());
+        assertEquals(user2, found.getAuthorUsername());
     }
 
     @Test
@@ -102,14 +104,14 @@ class RatingServiceRepositoryTest {
         repository.deleteById(existingId);
 
         RatingItem found = entityManager.find(RatingItem.class, existingId);
-        assertThat(found).isNull();
+        assertNull(found);
     }
 
     @Test
     void testFindAll_ReturnsAllItems() {
         List<RatingItem> items = repository.findAll();
 
-        assertThat(items).hasSize(3);
+        assertEquals(3, items.size());
     }
 
     @Test
@@ -120,12 +122,12 @@ class RatingServiceRepositoryTest {
 
     @Test
     void testUpdateItem_ChangesPersisted() {
-        RatingItem item = repository.findById(existingId).get();
+        RatingItem item = repository.findById(existingId).orElseThrow();
         item.setName("Updated Name");
 
         repository.save(item);
         RatingItem updated = entityManager.find(RatingItem.class, existingId);
 
-        assertThat(updated.getName()).isEqualTo("Updated Name");
+        assertEquals("Updated Name", updated.getName());
     }
 }
