@@ -24,6 +24,14 @@ public class RatingService {
         return result;
     }
 
+    private static List<RatingResponse> toResponse(List<RatingItem> items, String clientUsername) {
+        List<RatingResponse> result = new ArrayList<>();
+        for (RatingItem item : items) {
+            result.add(new RatingResponse(item, clientUsername));
+        }
+        return result;
+    }
+
     public RatingResponse save(@NonNull RatingRequest request) {
         return new RatingResponse(ratingServiceRepository.save(RatingItem.builder()
             .name(request.getName())
@@ -67,11 +75,24 @@ public class RatingService {
         return item == null ? null : new RatingResponse(item);
     }
 
+    public RatingResponse findById(@NonNull UUID id, @NonNull String clientUsername) {
+        RatingItem item = ratingServiceRepository.findById(id).orElse(null);
+        return item == null ? null : new RatingResponse(item, clientUsername);
+    }
+
     public List<RatingResponse> findAllByAuthorUsername(@NonNull String authorUsername) {
         return toResponse(ratingServiceRepository.findAllByAuthorUsername(authorUsername));
     }
 
+    public List<RatingResponse> findAllByAuthorUsername(@NonNull String authorUsername, @NonNull String clientUsername) {
+        return toResponse(ratingServiceRepository.findAllByAuthorUsername(authorUsername), clientUsername);
+    }
+
     public List<RatingResponse> findAll() {
         return toResponse(ratingServiceRepository.findAll());
+    }
+
+    public List<RatingResponse> findAll(@NonNull String clientUsername) {
+        return toResponse(ratingServiceRepository.findAll(), clientUsername);
     }
 }

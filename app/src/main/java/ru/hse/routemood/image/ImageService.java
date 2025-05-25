@@ -1,7 +1,6 @@
 package ru.hse.routemood.image;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,8 +8,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +23,7 @@ public class ImageService {
     @Value("${image.storage.path}")
     private String storagePath;
 
-    private String saveResource(MultipartFile file, String fileName) throws IOException {
+    private String saveFile(MultipartFile file, String fileName) throws IOException {
         Path uploadPath = Paths.get(storagePath);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -36,55 +33,51 @@ public class ImageService {
         return filePath.toString();
     }
 
-    private Resource loadAsResource(String filePath) throws MalformedURLException {
-        Path path = Paths.get(filePath);
-        return new UrlResource(path.toUri());
-    }
-
     private Image findById(@NonNull UUID id) {
         return imageServiceRepository.findById(id).orElse(null);
     }
 
-    public ImageSaveResponse save(@NonNull MultipartFile file, @NonNull String mimeType) {
+    public ImageSaveResponse save(@NonNull MultipartFile file) {
         String fileName = ImageNameGenerator.generateFileName(file);
 
         System.out.println("Generated image name: " + fileName);
 
         String filePath;
         try {
-            filePath = saveResource(file, fileName);
+            filePath = saveFile(file, fileName);
         } catch (IOException e) {
             // TODO more useful action
             return null;
         }
+
         Image image = Image.builder()
             .fileName(fileName)
             .filePath(filePath)
-            .mimeType(mimeType)
+            .mimeType(file.getContentType())
             .build();
         return new ImageSaveResponse(imageServiceRepository.save(image));
     }
 
-    public ImageLoadResponse load(@NonNull UUID imageId) {
+    public ImageLoadResponse load(@NonNull UUID imageId) throws IOException {
         Image image = findById(imageId);
         if (image == null) {
             return null;
         }
-        Resource file;
-        try {
-            file = loadAsResource(image.getFilePath());
-        } catch (IOException e) {
-            // TODO more useful action
-            return null;
-        }
+
+        byte[] fileData = Files.readAllBytes(Paths.get(image.getFilePath()));
+
         return ImageLoadResponse.builder()
-            .file(file)
+            .fileData(fileData)
             .mimeType(image.getMimeType())
             .build();
     }
 
-    public boolean delete(@NonNull UUID id) {
+    public boolean delete(@NonNull UUID id) throws IOException {
         if (imageServiceRepository.existsById(id)) {
+            Image image = findById(id);
+
+            Files.deleteIfExists(Paths.get(image.getFilePath()));
+
             imageServiceRepository.deleteById(id);
             return true;
         }

@@ -45,6 +45,9 @@ public class RatingItem {
     private UUID id;
 
     public static List<Double> fromRoute(Route route) {
+        if (route.getRoute() == null) {
+            return new ArrayList<>();
+        }
         List<Double> result = new ArrayList<>();
         for (RouteItem item : route.getRoute()) {
             result.add(item.getLatitude());
@@ -55,8 +58,10 @@ public class RatingItem {
 
     public static Route toRoute(List<Double> route) {
         List<RouteItem> result = new ArrayList<>();
-        for (int i = 0; i < route.size(); i += 2) {
-            result.add(new RouteItem(route.get(i), route.get(i + 1)));
+        if (route != null) {
+            for (int i = 0; i < route.size(); i += 2) {
+                result.add(new RouteItem(route.get(i), route.get(i + 1)));
+            }
         }
         return Route.builder().route(result).build();
     }
