@@ -12,10 +12,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.hse.routemood.auth.domain.dto.*;
 import ru.hse.routemood.auth.domain.models.Role;
-import ru.hse.routemood.auth.domain.models.User;
+import ru.hse.routemood.user.domain.models.User;
 import ru.hse.routemood.auth.services.AuthService;
 import ru.hse.routemood.auth.services.JwtService;
-import ru.hse.routemood.auth.services.UserService;
+import ru.hse.routemood.user.services.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

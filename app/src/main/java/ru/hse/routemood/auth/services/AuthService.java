@@ -10,7 +10,8 @@ import ru.hse.routemood.auth.domain.dto.AuthResponse;
 import ru.hse.routemood.auth.domain.dto.RefreshRequest;
 import ru.hse.routemood.auth.domain.dto.RegisterRequest;
 import ru.hse.routemood.auth.domain.models.Role;
-import ru.hse.routemood.auth.domain.models.User;
+import ru.hse.routemood.user.domain.models.User;
+import ru.hse.routemood.user.services.UserService;
 
 @Service
 @AllArgsConstructor

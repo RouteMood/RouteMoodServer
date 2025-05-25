@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.hse.routemood.auth.domain.models.User;
-import ru.hse.routemood.auth.repository.UserServiceRepository;
+import ru.hse.routemood.user.domain.models.User;
+import ru.hse.routemood.user.repository.UserServiceRepository;
 
 import java.util.Optional;
-import ru.hse.routemood.auth.services.UserService;
+import ru.hse.routemood.user.services.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

@@ -7,18 +7,15 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hse.routemood.auth.domain.dto.AuthResponse;
-import ru.hse.routemood.auth.domain.models.User;
-import ru.hse.routemood.auth.services.AuthService;
+import ru.hse.routemood.user.domain.models.User;
 import ru.hse.routemood.auth.services.JwtService;
-import ru.hse.routemood.auth.services.UserService;
+import ru.hse.routemood.user.services.UserService;
 import ru.hse.routemood.google.domain.dto.GoogleAuthRequest;
 
 @Service

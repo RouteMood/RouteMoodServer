@@ -1,10 +1,10 @@
-package ru.hse.routemood.auth.services;
+package ru.hse.routemood.user.services;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import ru.hse.routemood.auth.domain.models.User;
-import ru.hse.routemood.auth.repository.UserServiceRepository;
+import ru.hse.routemood.user.domain.models.User;
+import ru.hse.routemood.user.repository.UserServiceRepository;
 
 @Service
 @AllArgsConstructor
