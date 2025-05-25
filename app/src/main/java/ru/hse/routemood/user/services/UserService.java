@@ -1,8 +1,14 @@
 package ru.hse.routemood.user.services;
 
+import java.io.IOException;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import ru.hse.routemood.image.ImageService;
+import ru.hse.routemood.image.dto.ImageSaveResponse;
+import ru.hse.routemood.user.domain.dto.UserResponse;
 import ru.hse.routemood.user.domain.models.User;
 import ru.hse.routemood.user.repository.UserServiceRepository;
 
@@ -11,6 +17,7 @@ import ru.hse.routemood.user.repository.UserServiceRepository;
 public class UserService {
 
     private final UserServiceRepository userServiceRepository;
+    private final ImageService imageService;
 
     public User save(User user) {
         return userServiceRepository.save(user);
@@ -45,5 +52,36 @@ public class UserService {
         }
 
         return result;
+    }
+
+    public UserResponse getUserInfo(String username) {
+        User user = userServiceRepository.findByUsername(username).orElse(null);
+        return user == null ? null : UserResponse.builder()
+            .username(user.getUsername())
+            .avatarId(user.getAvatarId())
+            .build();
+    }
+
+    public UUID updateAvatar(String username, MultipartFile avatarFile) throws IOException {
+        User user = userServiceRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            return null;
+        }
+
+        if (user.getAvatarId() != null) {
+            imageService.delete(user.getAvatarId());
+        }
+
+        ImageSaveResponse imageSaveResponse = imageService.save(avatarFile);
+        if (imageSaveResponse == null) {
+            return null;
+        }
+
+        UUID avatarId = imageSaveResponse.getId();
+        user.setAvatarId(avatarId);
+        userServiceRepository.save(user);
+
+        return avatarId;
     }
 }
