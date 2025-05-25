@@ -29,6 +29,7 @@ public class SecurityConfiguration {
         "/api/login",
         "/api/register",
         "/api/hell2",
+        "/api/ads/**"
         "/api/google/auth"
     };
 
