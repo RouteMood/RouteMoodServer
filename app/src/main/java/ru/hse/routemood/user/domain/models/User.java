@@ -1,4 +1,4 @@
-package ru.hse.routemood.auth.domain.models;
+package ru.hse.routemood.user.domain.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +19,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.hse.routemood.auth.domain.models.Role;
 
 @Entity
 @Data
@@ -33,6 +34,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    private UUID avatarId;
     private String username;
     private String login;
     private String password;

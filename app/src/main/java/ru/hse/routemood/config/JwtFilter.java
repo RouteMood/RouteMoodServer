@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.hse.routemood.auth.services.JwtService;
-import ru.hse.routemood.auth.services.UserService;
+import ru.hse.routemood.user.services.UserService;
 
 @Component
 @RequiredArgsConstructor

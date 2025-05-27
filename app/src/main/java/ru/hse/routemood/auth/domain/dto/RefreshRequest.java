@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class RefreshRequest {
+
     private String accessToken;
     private String refreshToken;
     private String username;
