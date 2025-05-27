@@ -22,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import ru.hse.routemood.auth.services.JwtService;
 import ru.hse.routemood.user.domain.dto.UserResponse;
 import ru.hse.routemood.user.domain.models.User;
 import ru.hse.routemood.user.repository.UserServiceRepository;
@@ -34,13 +35,15 @@ public class UserControllerTest {
 
     @Mock
     private UserService userService;
+    @Mock
+    private JwtService jwtService;
 
     @InjectMocks
     private UserController userController;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks( this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -98,9 +101,12 @@ public class UserControllerTest {
         String username = "testUser";
         UUID avatarId = UUID.randomUUID();
         MultipartFile mockFile = mock(MultipartFile.class);
+        String authHeader = "Bearer token";
+
+        when(jwtService.extractUsername("token")).thenReturn(username);
         when(userService.updateAvatar(username, mockFile)).thenReturn(avatarId);
 
-        ResponseEntity<UUID> response = userController.updateAvatar(username, mockFile);
+        ResponseEntity<UUID> response = userController.updateAvatar(mockFile, authHeader);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(avatarId, response.getBody());
@@ -109,9 +115,15 @@ public class UserControllerTest {
     @Test
     void updateAvatar_UserNotFound_ReturnsNotFound() throws IOException {
         String username = "unknown";
+        String authHeader = "Bearer token";
+
+        when(jwtService.extractUsername("token")).thenReturn(username);
         when(userService.updateAvatar(eq(username), any(MultipartFile.class))).thenReturn(null);
 
-        ResponseEntity<UUID> response = userController.updateAvatar(username, mock(MultipartFile.class));
+        ResponseEntity<UUID> response = userController.updateAvatar(
+            mock(MultipartFile.class),
+            authHeader
+        );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNull(response.getBody());
@@ -121,9 +133,12 @@ public class UserControllerTest {
     void updateAvatar_InternalError_Returns500() throws IOException {
         String username = "testUser";
         MultipartFile mockFile = mock(MultipartFile.class);
+        String authHeader = "Bearer token";
+
+        when(jwtService.extractUsername("token")).thenReturn(username);
         when(userService.updateAvatar(username, mockFile)).thenThrow(new IOException("Error"));
 
-        ResponseEntity<UUID> response = userController.updateAvatar(username, mockFile);
+        ResponseEntity<UUID> response = userController.updateAvatar(mockFile, authHeader);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -131,9 +146,12 @@ public class UserControllerTest {
     @Test
     void updateAvatar_NullFile_Returns500() throws IOException {
         String username = "testUser";
+        String authHeader = "Bearer token";
+
+        when(jwtService.extractUsername("token")).thenReturn(username);
         when(userService.updateAvatar(username, null)).thenThrow(IOException.class);
 
-        ResponseEntity<UUID> response = userController.updateAvatar(username, null);
+        ResponseEntity<UUID> response = userController.updateAvatar( null, authHeader);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
