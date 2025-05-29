@@ -24,6 +24,7 @@ import ru.hse.routemood.gpt.JsonWorker.RouteItem;
 import ru.hse.routemood.rating.dto.RateRequest;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
+import ru.hse.routemood.rating.services.RatingService;
 
 @ExtendWith(MockitoExtension.class)
 class RatingControllerTest {

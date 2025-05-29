@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import ru.hse.routemood.rating.models.RatingItem;
+import ru.hse.routemood.rating.repository.RatingServiceRepository;
 
 @DataJpaTest
 class RatingServiceRepositoryTest {

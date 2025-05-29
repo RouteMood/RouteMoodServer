@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import ru.hse.routemood.gpt.JsonWorker.Route;
@@ -40,6 +41,8 @@ public class RatingItem {
     @Builder.Default
     @ElementCollection
     private Map<String, Integer> usernameToRate = new HashMap<>();
+    @Builder.Default
+    private double rating = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -66,7 +69,12 @@ public class RatingItem {
         return Route.builder().route(result).build();
     }
 
-    public double getRating() {
-        return (double) ratesSum / usernameToRate.size();
+    public void updateRating(@NonNull String username, int rate) {
+        if (usernameToRate.containsKey(username)) {
+            ratesSum -= usernameToRate.get(username);
+        }
+        ratesSum += rate;
+        usernameToRate.put(username, rate);
+        rating = (double) ratesSum / usernameToRate.size();
     }
 }
