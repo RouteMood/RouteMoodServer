@@ -20,7 +20,7 @@ import ru.hse.routemood.rating.repository.RatingServiceRepository;
 public class RatingService {
 
     private final RatingServiceRepository ratingServiceRepository;
-    private final int PAGE_SIZE = 2;
+    private final int PAGE_SIZE = 10;
 
     private static List<RatingResponse> toResponse(List<RatingItem> items) {
         List<RatingResponse> result = new ArrayList<>();

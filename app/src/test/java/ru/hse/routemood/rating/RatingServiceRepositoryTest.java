@@ -131,4 +131,64 @@ class RatingServiceRepositoryTest {
 
         assertEquals("Updated Name", updated.getName());
     }
+
+    @Test
+    void getFirstPage_shouldReturnCorrectNumberOfItems() {
+        createTestItemsWithRating();
+
+        List<RatingItem> result = repository.getFirstPage(2);
+
+        assertEquals(2, result.size());
+        assertTrue(result.get(0).getRating() >= result.get(1).getRating());
+    }
+
+    @Test
+    void getNextPage_shouldPaginateCorrectly() {
+        RatingItem item1 = createItemWithRating(4.5);
+        RatingItem item2 = createItemWithRating(4.0);
+        RatingItem item3 = createItemWithRating(3.5);
+
+        List<RatingItem> result = repository.getNextPage(
+            4.5, item1.getId(), 2
+        );
+
+        assertEquals(2, result.size());
+        assertEquals(item2.getId(), result.get(0).getId());
+        assertEquals(item3.getId(), result.get(1).getId());
+    }
+
+    @Test
+    void getNextPage_shouldHandleEqualRatings() {
+        RatingItem item1 = createItemWithRating(4.0);
+        RatingItem item2 = createItemWithRating(4.0);
+        RatingItem item3 = createItemWithRating(3.0);
+
+        UUID expectedNextId = item1.getId().compareTo(item2.getId()) < 0
+            ? item2.getId()
+            : item1.getId();
+
+        List<RatingItem> result = repository.getNextPage(
+            4.0,
+            item1.getId().compareTo(item2.getId()) < 0 ? item1.getId() : item2.getId(),
+            2
+        );
+
+        assertEquals(2, result.size());
+        assertEquals(expectedNextId, result.get(0).getId());
+        assertEquals(item3.getId(), result.get(1).getId());
+    }
+
+    private void createTestItemsWithRating() {
+        for (int i = 3; i > 0; i--) {
+            createItemWithRating(i * 1.0);
+        }
+    }
+
+    private RatingItem createItemWithRating(double rating) {
+        RatingItem item = RatingItem.builder()
+            .name("Test")
+            .rating(rating)
+            .build();
+        return repository.save(item);
+    }
 }

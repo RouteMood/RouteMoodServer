@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import ru.hse.routemood.auth.services.JwtService;
 import ru.hse.routemood.gpt.JsonWorker.Route;
 import ru.hse.routemood.gpt.JsonWorker.RouteItem;
+import ru.hse.routemood.rating.dto.PageResponse;
 import ru.hse.routemood.rating.dto.RateRequest;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
@@ -191,5 +193,43 @@ class RatingControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    void getFirstPage_shouldReturnOk() {
+        when(jwtService.extractUsername(any())).thenReturn("user");
+        when(ratingService.getFirstPage(any())).thenReturn(new PageResponse());
+
+        ResponseEntity<PageResponse> response =
+            ratingController.getFirstPage("Bearer token");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getNextPage_shouldHandleValidToken() {
+        String validToken = "valid_token";
+        when(jwtService.extractUsername(any())).thenReturn("user");
+        when(ratingService.getNextPage(eq(validToken), any()))
+            .thenReturn(new PageResponse());
+
+        ResponseEntity<PageResponse> response =
+            ratingController.getNextPage(validToken, "Bearer token");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getNextPage_shouldHandleServiceNullResponse() {
+        when(jwtService.extractUsername(any())).thenReturn("user");
+        when(ratingService.getNextPage(any(), any())).thenReturn(null);
+
+        ResponseEntity<PageResponse> response =
+            ratingController.getNextPage("invalid", "Bearer token");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }
