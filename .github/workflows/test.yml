@@ -7,7 +7,7 @@ on:
     branches: [ '*' ]
 
 jobs:
-  test:
+  auth-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,4 +27,92 @@ jobs:
       run: ./gradlew build
     
     - name: Run Tests
-      run: ./gradlew test --tests "ru.hse.routemood.*"
+      run: ./gradlew test --tests "ru.hse.routemood.auth*"
+
+  image-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test --tests "ru.hse.routemood.image*"
+
+  rating-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test --tests "ru.hse.routemood.rating*"
+
+  user-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test --tests "ru.hse.routemood.user*"
+
+  video-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Run Tests
+        run: ./gradlew test --tests "ru.hse.routemood.video*"
