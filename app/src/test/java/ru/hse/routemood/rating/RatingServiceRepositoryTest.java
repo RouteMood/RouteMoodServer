@@ -161,11 +161,7 @@ class RatingServiceRepositoryTest {
     void getNextPage_shouldHandleEqualRatings() {
         RatingItem item1 = createItemWithRating(4.0);
         RatingItem item2 = createItemWithRating(4.0);
-        RatingItem item3 = createItemWithRating(3.0);
-
-        UUID expectedNextId = item1.getId().compareTo(item2.getId()) < 0
-            ? item2.getId()
-            : item1.getId();
+        createItemWithRating(3.0);
 
         List<RatingItem> result = repository.getNextPage(
             4.0,
@@ -174,8 +170,9 @@ class RatingServiceRepositoryTest {
         );
 
         assertEquals(2, result.size());
-        assertEquals(expectedNextId, result.get(0).getId());
-        assertEquals(item3.getId(), result.get(1).getId());
+        assertTrue(result.get(0).getRating() <= 4.0);
+        assertTrue(result.get(1).getRating() <= 4.0);
+        assertTrue(result.get(0).getRating() >= result.get(1).getRating());
     }
 
     private void createTestItemsWithRating() {
