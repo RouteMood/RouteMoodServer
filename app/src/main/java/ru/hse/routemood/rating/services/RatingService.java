@@ -14,32 +14,46 @@ import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
 import ru.hse.routemood.rating.models.RatingItem;
 import ru.hse.routemood.rating.repository.RatingServiceRepository;
+import ru.hse.routemood.user.services.UserService;
 
 @Service
 @AllArgsConstructor
 public class RatingService {
 
     private final RatingServiceRepository ratingServiceRepository;
+    private final UserService userService;
     private final int PAGE_SIZE = 10;
 
-    private static List<RatingResponse> toResponse(List<RatingItem> items) {
+    private RatingResponse toResponse(RatingItem item) {
+        RatingResponse response = new RatingResponse(item);
+        response.setAuthor(userService.getUserInfo(item.getAuthorUsername()));
+        return response;
+    }
+
+    private RatingResponse toResponse(RatingItem item, String clientUsername) {
+        RatingResponse response = new RatingResponse(item, clientUsername);
+        response.setAuthor(userService.getUserInfo(item.getAuthorUsername()));
+        return response;
+    }
+
+    private List<RatingResponse> toResponse(List<RatingItem> items) {
         List<RatingResponse> result = new ArrayList<>();
         for (RatingItem item : items) {
-            result.add(new RatingResponse(item));
+            result.add(toResponse(item));
         }
         return result;
     }
 
-    private static List<RatingResponse> toResponse(List<RatingItem> items, String clientUsername) {
+    private List<RatingResponse> toResponse(List<RatingItem> items, String clientUsername) {
         List<RatingResponse> result = new ArrayList<>();
         for (RatingItem item : items) {
-            result.add(new RatingResponse(item, clientUsername));
+            result.add(toResponse(item, clientUsername));
         }
         return result;
     }
 
     public RatingResponse save(@NonNull RatingRequest request) {
-        return new RatingResponse(ratingServiceRepository.save(RatingItem.builder()
+        return toResponse(ratingServiceRepository.save(RatingItem.builder()
             .name(request.getName())
             .description(request.getDescription())
             .authorUsername(request.getAuthorUsername())
@@ -66,7 +80,7 @@ public class RatingService {
 
         ratingServiceRepository.save(item);
 
-        return new RatingResponse(item);
+        return toResponse(item);
     }
 
     public Integer getUserRate(@NonNull UUID routeId, @NonNull String username) {
@@ -77,12 +91,12 @@ public class RatingService {
 
     public RatingResponse findById(@NonNull UUID id) {
         RatingItem item = ratingServiceRepository.findById(id).orElse(null);
-        return item == null ? null : new RatingResponse(item);
+        return item == null ? null : toResponse(item);
     }
 
     public RatingResponse findById(@NonNull UUID id, @NonNull String clientUsername) {
         RatingItem item = ratingServiceRepository.findById(id).orElse(null);
-        return item == null ? null : new RatingResponse(item, clientUsername);
+        return item == null ? null : toResponse(item, clientUsername);
     }
 
     public List<RatingResponse> findAllByAuthorUsername(@NonNull String authorUsername) {

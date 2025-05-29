@@ -101,13 +101,13 @@ public class RatingController {
     }
 
     @GetMapping("/next-page")
-    public ResponseEntity<PageResponse> getNextPage(@RequestParam String nextPageToken,
+    public ResponseEntity<PageResponse> getNextPage(
+        @RequestParam(name = "nextPageToken") String nextPageToken,
         @RequestHeader("Authorization") String authHeader) {
         System.out.println("Get next page request, nextPageToken: " + nextPageToken);
         return ResponseEntity.ok(
             ratingService.getNextPage(nextPageToken, getUsername(authHeader)));
     }
-
 
     private String getUsername(String authHeader) {
         return jwtService.extractUsername(authHeader.substring(7));

@@ -36,12 +36,12 @@ class RatingControllerTest {
         .name("testName")
         .description("testDescription")
         .rating(5.0)
-        .authorUsername("testUser")
         .route(Route.builder()
             .route(Collections.singletonList(new RouteItem(0.0, 0.0)))
             .build())
         .rate(5)
         .build();
+
     @Mock
     private RatingService ratingService;
     @Mock

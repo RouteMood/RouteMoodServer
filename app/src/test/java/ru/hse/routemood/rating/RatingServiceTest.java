@@ -35,13 +35,16 @@ import ru.hse.routemood.rating.dto.RatingResponse;
 import ru.hse.routemood.rating.models.RatingItem;
 import ru.hse.routemood.rating.repository.RatingServiceRepository;
 import ru.hse.routemood.rating.services.RatingService;
+import ru.hse.routemood.user.domain.dto.UserResponse;
+import ru.hse.routemood.user.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class RatingServiceTest {
 
     @Mock
     private RatingServiceRepository repository;
-
+    @Mock
+    private UserService userService;
     @InjectMocks
     private RatingService ratingService;
 
@@ -67,15 +70,19 @@ class RatingServiceTest {
             .description(request.getDescription())
             .authorUsername(request.getAuthorUsername())
             .build();
+        UserResponse author = UserResponse.builder().username(request.getAuthorUsername()).build();
 
         when(repository.save(any(RatingItem.class))).thenReturn(savedItem);
+        when(userService.getUserInfo(any(String.class))).thenReturn(author);
 
         RatingResponse response = ratingService.save(request);
+
+        System.out.println(response);
 
         assertNotNull(response);
         assertEquals(request.getName(), response.getName());
         assertEquals(request.getDescription(), response.getDescription());
-        assertEquals(request.getAuthorUsername(), response.getAuthorUsername());
+        assertEquals(request.getAuthorUsername(), response.getAuthor().getUsername());
         verify(repository).save(any(RatingItem.class));
     }
 
