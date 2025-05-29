@@ -7,13 +7,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: false
     properties:
       hibernate:
         format_sql: true
-    database: postgresqlы
+    database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
@@ -26,7 +24,7 @@ application:
     client-id: # Вставить сюда google client-id
   security:
     jwt:
-#      супер пупер секретный ключ от команды openssl rand -hex 512. Валере не смотреть.
+      #      супер пупер секретный ключ от команды openssl rand -hex 512. Валере не смотреть.
       secret-key: 83a177d1f07a0f85e40cba4883acdbd06a8f97d2f78525bb2c3ef270e6d74dc32d79256a8d7bbce92a0c9d174200347b3cdd31b002443bac475cdffa3940bfb35a6fc3a1a77992ea06fee5a8a12089207da6f67bc807a43101fabb9099a7bf200400add9049c13a1a638e978b2e954eb4d20df7290b6233215c75285d630688a5fff4030f78e8789bd86dc96d96be53cffb44010294aabc2757c675b087b70d3543f6001172ecee5f9eee7163ed4acb0d374beef7c63676b21abfd6cb160c0ba26f62e5a823b460ec176a6f813e65dce6ed433beba6d05ea17dddbb7a0aff43911978366afcd1c94332ee4df8050fb4c3a79957e9cc15af415bca5e2fa0860b06ffeee13568bdfd8c6a4da42df53cede24c15226e5976c5cfa9398b6e3a6a9f5e62e65b8429246152184b5a1bd5f93e2265703be8c9b5dd41cd10a5f97a0c76efb46e04e59fd2d96eb9d70969ca96f2bb9b2db75d35bbeeb9e20e5c3d33584e1540ca585b23f3e3f0d94d7dfb043518f4040002537187c91d1225a689091507a443728f66b813dd2ce90267d2acb9f296035e97f64643655b32ca045eb5dd47f47b4a6db9c9c5e55cabebf681040e2c04674ca69734008129e4ae301c54e8799087f1aa2f3b9bbcdb1f54930b816f654ae4285a3b2f7f535cefb6c07afe6931c60f7dd27ae73ce6d7de30201b99195c62bc8d4cd8e79c1bff29ace50c1178b1c
       expiration: 604800000
       refresh-token:

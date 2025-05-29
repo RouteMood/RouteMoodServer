@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.routemood.auth.services.JwtService;
+import ru.hse.routemood.rating.dto.PageResponse;
 import ru.hse.routemood.rating.dto.RateRequest;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
@@ -93,15 +94,18 @@ public class RatingController {
     }
 
     @GetMapping("/first-page")
-    public ResponseEntity<List<RatingResponse>> getFirstPage() {
+    public ResponseEntity<PageResponse> getFirstPage(
+        @RequestHeader("Authorization") String authHeader) {
         System.out.println("Get first page request");
-        return ResponseEntity.ok(ratingService.getFirstPage());
+        return ResponseEntity.ok(ratingService.getFirstPage(getUsername(authHeader)));
     }
 
     @GetMapping("/next-page")
-    public ResponseEntity<List<RatingResponse>> getNextPage(@RequestParam double lastRating,
-        @RequestParam UUID lastId) {
-        return ResponseEntity.ok(ratingService.getNextPage(lastRating, lastId));
+    public ResponseEntity<PageResponse> getNextPage(@RequestParam String nextPageToken,
+        @RequestHeader("Authorization") String authHeader) {
+        System.out.println("Get next page request, nextPageToken: " + nextPageToken);
+        return ResponseEntity.ok(
+            ratingService.getNextPage(nextPageToken, getUsername(authHeader)));
     }
 
 
