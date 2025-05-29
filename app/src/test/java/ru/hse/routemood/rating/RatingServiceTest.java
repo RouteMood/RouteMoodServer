@@ -1,15 +1,22 @@
 package ru.hse.routemood.rating;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +27,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.util.Pair;
 import ru.hse.routemood.gpt.JsonWorker.Route;
+import ru.hse.routemood.rating.dto.PageResponse;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
 import ru.hse.routemood.rating.models.RatingItem;
+import ru.hse.routemood.rating.repository.RatingServiceRepository;
+import ru.hse.routemood.rating.services.RatingService;
 
 @ExtendWith(MockitoExtension.class)
 class RatingServiceTest {
@@ -33,6 +44,18 @@ class RatingServiceTest {
 
     @InjectMocks
     private RatingService ratingService;
+
+    private Object invokePrivateMethod(String methodName, Object... params)
+        throws InvocationTargetException, IllegalAccessException {
+        for (Method method : ratingService.getClass().getDeclaredMethods()) {
+            if (method.getName().equals(methodName)
+                && method.getParameterCount() == params.length) {
+                method.setAccessible(true);
+                return method.invoke(ratingService, params);
+            }
+        }
+        return null;
+    }
 
     @Test
     void save_ValidRequest_ReturnsResponse() {
@@ -201,5 +224,89 @@ class RatingServiceTest {
         List<RatingResponse> responses = ratingService.findAll();
 
         assertEquals(items.size(), responses.size());
+    }
+
+    @Test
+    void getFirstPage_shouldReturnPageResponse() {
+        List<RatingItem> items = List.of(
+            mock(RatingItem.class),
+            mock(RatingItem.class)
+        );
+        when(repository.getFirstPage(anyInt())).thenReturn(items);
+        when(items.get(1).getRating()).thenReturn(3.5);
+        when(items.get(1).getId()).thenReturn(UUID.randomUUID());
+
+        PageResponse response = ratingService.getFirstPage("user");
+
+        assertEquals(2, response.getItems().size());
+        assertNotNull(response.getNextPageToken());
+    }
+
+    @Test
+    void getNextPage_shouldHandleValidToken()
+        throws InvocationTargetException, IllegalAccessException {
+        String validToken = (String) invokePrivateMethod("toPageToken", 4.5, UUID.randomUUID());
+        List<RatingItem> items = List.of(mock(RatingItem.class));
+        when(repository.getNextPage(anyDouble(), any(), anyInt())).thenReturn(items);
+
+        PageResponse response = ratingService.getNextPage(validToken, "user");
+
+        assertNotNull(response);
+        assertEquals(1, response.getItems().size());
+    }
+
+    @Test
+    void getNextPage_shouldHandleInvalidToken() {
+        PageResponse response = ratingService.getNextPage("invalid_token", "user");
+
+        assertNull(response);
+    }
+
+    @Test
+    void parsePageToken_shouldHandleValidToken()
+        throws InvocationTargetException, IllegalAccessException {
+        UUID expectedId = UUID.randomUUID();
+
+        String token = (String) invokePrivateMethod("toPageToken", 4.5, expectedId);
+
+        Pair<Double, UUID> result = (Pair<Double, UUID>) invokePrivateMethod("parsePageToken",
+            token);
+
+        assertNotNull(result);
+        assertEquals(4.5, result.getFirst());
+        assertEquals(expectedId, result.getSecond());
+    }
+
+    @Test
+    void parsePageToken_shouldHandleInvalidFormats() {
+        assertAll(
+            () -> assertNull(invokePrivateMethod("parsePageToken", "invalid_base64")),
+            () -> assertNull(invokePrivateMethod("parsePageToken",
+                Base64.getUrlEncoder().encodeToString("invalid_format".getBytes()))),
+            () -> assertNull(invokePrivateMethod("parsePageToken",
+                Base64.getUrlEncoder().encodeToString("not_a_number|uuid".getBytes())))
+        );
+    }
+
+    @Test
+    void toPageToken_shouldGenerateValidToken()
+        throws InvocationTargetException, IllegalAccessException {
+        UUID id = UUID.randomUUID();
+        double rating = 4.5;
+
+        String token = (String) invokePrivateMethod("toPageToken", rating, id);
+
+        Pair<Double, UUID> result = (Pair<Double, UUID>) invokePrivateMethod("parsePageToken",
+            token);
+
+        assertNotNull(result);
+        assertEquals(rating, result.getFirst());
+        assertEquals(id, result.getSecond());
+    }
+
+    @Test
+    void toPageToken_shouldReturnNullForEmptyList()
+        throws InvocationTargetException, IllegalAccessException {
+        assertNull(invokePrivateMethod("toPageToken", List.of()));
     }
 }

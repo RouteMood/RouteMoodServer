@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.routemood.auth.services.JwtService;
+import ru.hse.routemood.rating.dto.PageResponse;
 import ru.hse.routemood.rating.dto.RateRequest;
 import ru.hse.routemood.rating.dto.RatingRequest;
 import ru.hse.routemood.rating.dto.RatingResponse;
+import ru.hse.routemood.rating.services.RatingService;
 
 @RestController
 @RequestMapping(path = "/rating")
@@ -76,7 +78,8 @@ public class RatingController {
         @RequestParam(name = "author") String authorUsername,
         @RequestHeader("Authorization") String authHeader) {
         System.out.println("get route request: " + authorUsername);
-        List<RatingResponse> response = ratingService.findAllByAuthorUsername(authorUsername, getUsername(authHeader));
+        List<RatingResponse> response = ratingService.findAllByAuthorUsername(authorUsername,
+            getUsername(authHeader));
         if (response == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -89,8 +92,23 @@ public class RatingController {
         System.out.println("Get listRoutes request");
         return ResponseEntity.ok(ratingService.findAll(getUsername(authHeader)));
     }
-    
-    
+
+    @GetMapping("/first-page")
+    public ResponseEntity<PageResponse> getFirstPage(
+        @RequestHeader("Authorization") String authHeader) {
+        System.out.println("Get first page request");
+        return ResponseEntity.ok(ratingService.getFirstPage(getUsername(authHeader)));
+    }
+
+    @GetMapping("/next-page")
+    public ResponseEntity<PageResponse> getNextPage(@RequestParam String nextPageToken,
+        @RequestHeader("Authorization") String authHeader) {
+        System.out.println("Get next page request, nextPageToken: " + nextPageToken);
+        return ResponseEntity.ok(
+            ratingService.getNextPage(nextPageToken, getUsername(authHeader)));
+    }
+
+
     private String getUsername(String authHeader) {
         return jwtService.extractUsername(authHeader.substring(7));
     }
