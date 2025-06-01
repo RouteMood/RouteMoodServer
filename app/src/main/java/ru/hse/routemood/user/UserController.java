@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import ru.hse.routemood.user.services.UserService;
 @RestController
 @RequestMapping(path = "/user")
 @AllArgsConstructor
+@Log4j2
 public class UserController {
 
 
@@ -52,7 +54,7 @@ public class UserController {
             UUID id = userService.updateAvatar(username, file);
             return ResponseEntity.ok(id);
         } catch (IOException e) {
-            System.out.println("Can't update avatar " + username);
+            log.error("Can't update avatar {}", username);
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +14,7 @@ import ru.hse.routemood.video.models.UploadMedia;
 import ru.hse.routemood.video.utils.FileStorageUtil;
 
 @Service
+@Log4j2
 public class FileWorkerService {
 
     @Autowired
@@ -26,14 +28,14 @@ public class FileWorkerService {
             .originalPath(fileStorageUtil.createFile(file))
             .username(username)
             .build();
-        System.out.println(media);
+        log.info(media);
 
         return dao.upload(media);
     }
 
     public Optional<UploadMedia> random() throws IOException {
         String path = fileStorageUtil.randomFile();
-        System.out.println(path);
+        log.info(path);
         return dao.random(path);
     }
     public Optional<UploadMedia> findById(UUID id) {

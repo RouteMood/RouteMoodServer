@@ -3,6 +3,7 @@ package ru.hse.routemood.user.services;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import ru.hse.routemood.user.repository.UserServiceRepository;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class UserService {
 
     private final UserServiceRepository userServiceRepository;
@@ -33,12 +35,12 @@ public class UserService {
 
     public User createUser(User user) {
         if (userServiceRepository.existsByUsername(user.getUsername())) {
-            System.out.println(user.getUsername());
+            log.info(user.getUsername());
             return null;
         }
 
         if (userServiceRepository.existsByLogin(user.getLogin())) {
-            System.out.println(user.getLogin());
+            log.info(user.getLogin());
             return null;
         }
 

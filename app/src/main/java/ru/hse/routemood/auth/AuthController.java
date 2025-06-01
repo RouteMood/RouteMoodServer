@@ -1,6 +1,7 @@
 package ru.hse.routemood.auth;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,19 +17,20 @@ import ru.hse.routemood.auth.services.AuthService;
 @RestController
 @RequestMapping(path = "/api")
 @AllArgsConstructor
+@Log4j2
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping(path = "/register")
     public ResponseEntity<AuthResponse> registerUser(@RequestBody RegisterRequest request) {
-        System.out.println("Get request: " + request.getLogin());
+        log.info("Get request: {}", request.getLogin());
         AuthResponse result = authService.registerUser(request);
         if (result == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        System.out.println("Get request: " + request.getLogin());
+        log.info("Get request: {}", request.getLogin());
         return ResponseEntity.ok(result);
     }
 

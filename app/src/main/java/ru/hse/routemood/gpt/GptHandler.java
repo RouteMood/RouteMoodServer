@@ -1,5 +1,6 @@
 package ru.hse.routemood.gpt;
 
+import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class GptHandler {
 
     private static TokenStore oauthToken;
@@ -30,7 +32,7 @@ public class GptHandler {
 
     public static void init() {
         Properties properties = new Properties();
-        System.out.println(tokenFileName);
+        log.info(tokenFileName);
 
         try (FileInputStream fileInputStream = new FileInputStream(tokenFileName)) {
             properties.load(fileInputStream);

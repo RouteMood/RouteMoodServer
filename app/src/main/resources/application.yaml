@@ -18,6 +18,8 @@ spring:
       enabled: true
       max-request-size: 200MB
       max-file-size: 200MB
+#logging:
+#  config: classpath:log4j2.xml
 
 application:
   google:

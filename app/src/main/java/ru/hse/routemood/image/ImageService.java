@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import ru.hse.routemood.image.models.Image;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ImageService {
 
     private final ImageServiceRepository imageServiceRepository;
@@ -40,7 +42,7 @@ public class ImageService {
     public ImageSaveResponse save(@NonNull MultipartFile file) {
         String fileName = ImageNameGenerator.generateFileName(file);
 
-        System.out.println("Generated image name: " + fileName);
+        log.info("Generated image name: {}", fileName);
 
         String filePath;
         try {

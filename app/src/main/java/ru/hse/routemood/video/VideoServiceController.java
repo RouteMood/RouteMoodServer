@@ -14,6 +14,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,7 @@ import ru.hse.routemood.video.services.VideoStreamingService;
 
 @RestController
 @RequestMapping("/api/ads")
+@Log4j2
 public class VideoServiceController {
 
     @Value("${server.types}")
@@ -61,15 +63,13 @@ public class VideoServiceController {
     public ResponseEntity<?> uploadVideo(
         @RequestPart("content") MultipartFile file,
         @RequestHeader("Authorization") String jwtToken) {
-//        String
-        System.out.println(file.getContentType());
+        log.info(file.getContentType());
         String before = "Bearer:";
         jwtToken = jwtToken.substring(before.length());
-        System.out.println(jwtToken);
+        log.info(jwtToken);
         String username = jwtService.extractUsername(jwtToken);
-        System.out.println(username);
+        log.info(username);
         String mediaType = file.getContentType();
-//        String username = "12";
 
         if (!contentTypes.contains(mediaType)) {
             return badRequest().body("GGWP");
