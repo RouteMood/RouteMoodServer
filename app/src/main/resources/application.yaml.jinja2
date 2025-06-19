@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 200MB
+      max-file-size: 200MB
+#logging:
+#  config: classpath:log4j2.xml
+
+application:
+  google:
+    client-id: # Вставить сюда google client-id
+  security:
+    jwt:
+      secret-key: {{ random_hex }}
+      expiration: 604800000
+      refresh-token:
+        expiration: 604800000
+
+server:
+  types: video/mpeg4-generic, video/mpeg, video/mp4
+
+image:
+  storage:
+    path: /tmp/routemood/images
