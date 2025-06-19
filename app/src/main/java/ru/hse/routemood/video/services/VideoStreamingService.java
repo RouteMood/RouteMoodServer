@@ -9,13 +9,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.file.*;
+import ru.hse.routemood.video.models.UploadMedia;
 
 @Service
 public class VideoStreamingService {
 
     @Autowired
     private FileWorkerService fileWorkerService;
-    public ResponseEntity<Resource> prepareContent(UUID id, HttpHeaders headers) throws IOException {
+    public ResponseEntity<Resource> prepareContent(UploadMedia media, HttpHeaders headers) throws IOException {
+        var id = media.getId();
+        var url = media.getUrl();
         File videoFile = fileWorkerService.getFile(id);
 
         if (!videoFile.exists()) {
@@ -60,6 +63,7 @@ public class VideoStreamingService {
         );
 
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+            .header("Location", url)
             .headers(responseHeaders)
             .contentLength(contentLength)
             .body(resource);

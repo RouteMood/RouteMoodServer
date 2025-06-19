@@ -40,6 +40,20 @@ public class FileStorageUtil {
         return location;
     }
 
+    public void deleteFile(String path) throws IOException {
+        File file = new File(path);
+        var directory = file.getParent();
+
+        if (file.exists()) {
+            FileUtils.deleteQuietly(file);
+        }
+
+        file = new File(directory);
+        if (file.listFiles().length == 0) {
+            FileUtils.deleteDirectory(file);
+        }
+    }
+
     public byte[] getFile(String path) throws IOException {
         File file = new File(path);
         byte[] b = null;

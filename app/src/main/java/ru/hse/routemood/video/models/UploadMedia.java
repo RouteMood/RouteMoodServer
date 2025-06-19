@@ -29,4 +29,5 @@ public class UploadMedia {
     private UUID id;
     private String originalPath;
     private String username;
+    private String url;
 }

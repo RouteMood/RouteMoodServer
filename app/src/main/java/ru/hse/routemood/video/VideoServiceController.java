@@ -27,11 +27,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import ru.hse.routemood.auth.services.JwtService;
+import ru.hse.routemood.video.dao.FileStorageDao;
 import ru.hse.routemood.video.models.UploadMedia;
 import ru.hse.routemood.video.services.FileWorkerService;
 import ru.hse.routemood.video.services.VideoStreamingService;
@@ -49,6 +51,9 @@ public class VideoServiceController {
     private FileWorkerService fileWorkerService;
 
     @Autowired
+    private FileStorageDao dao;
+
+    @Autowired
     private VideoStreamingService videoStreamingService;
 
     @Autowired
@@ -62,7 +67,8 @@ public class VideoServiceController {
             MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> uploadVideo(
         @RequestPart("content") MultipartFile file,
-        @RequestHeader("Authorization") String jwtToken) {
+        @RequestHeader("Authorization") String jwtToken,
+        @RequestParam(defaultValue = "https://1xbet.com") String url) {
         log.info(file.getContentType());
         String before = "Bearer:";
         jwtToken = jwtToken.substring(before.length());
@@ -76,7 +82,7 @@ public class VideoServiceController {
         }
 
         try {
-            return ok(fileWorkerService.saveMedia(file, username));
+            return ok(fileWorkerService.saveMedia(file, username, url));
         } catch (IOException e) {
             return badRequest().body("biba");
         }
@@ -86,18 +92,23 @@ public class VideoServiceController {
     public ResponseEntity<?> downloadVideo(
         @PathVariable("id") UUID id,
         @RequestHeader HttpHeaders headers) throws IOException {
-        return videoStreamingService.prepareContent(id, headers);
+        var media = dao.find(id);
+        if (media.isEmpty()) {
+            return badRequest().body("Unknow media id");
+        }
+        return videoStreamingService.prepareContent(media.get(), headers);
     }
 
     @GetMapping("/download/random.mp4")
     public ResponseEntity<?> downloadRandom(
         @RequestHeader HttpHeaders headers) throws IOException {
         Optional<UploadMedia> mediaOptional = fileWorkerService.random();
+
         if (mediaOptional.isEmpty()) {
             return noContent().build();
         }
 
         UploadMedia media = mediaOptional.get();
-        return videoStreamingService.prepareContent(media.getId(), headers);
+        return videoStreamingService.prepareContent(media, headers);
     }
 }

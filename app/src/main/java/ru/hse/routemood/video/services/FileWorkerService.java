@@ -24,9 +24,14 @@ public class FileWorkerService {
     private FileStorageUtil fileStorageUtil;
 
     public UploadMedia saveMedia(MultipartFile file, String username) throws IOException {
+        return saveMedia(file, username, "https://1xbet.com");
+    }
+
+    public UploadMedia saveMedia(MultipartFile file, String username, String url) throws IOException {
         UploadMedia media = UploadMedia.builder()
             .originalPath(fileStorageUtil.createFile(file))
             .username(username)
+            .url(url)
             .build();
         log.info(media);
 
@@ -36,7 +41,14 @@ public class FileWorkerService {
     public Optional<UploadMedia> random() throws IOException {
         String path = fileStorageUtil.randomFile();
         log.info(path);
-        return dao.random(path);
+        var result = dao.random(path);
+
+        while (result.isEmpty()) {
+            fileStorageUtil.deleteFile(path);
+            result = dao.random(path);
+        }
+
+        return result;
     }
     public Optional<UploadMedia> findById(UUID id) {
         return dao.find(id);
@@ -44,6 +56,10 @@ public class FileWorkerService {
 
     public byte[] getFile(String location) throws IOException {
         return fileStorageUtil.getFile(location);
+    }
+
+    public void deleteFile(String path) throws IOException {
+        fileStorageUtil.deleteFile(path);
     }
 
     public File getFile(UUID id) {
