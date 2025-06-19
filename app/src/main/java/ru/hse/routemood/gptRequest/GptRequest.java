@@ -18,4 +18,6 @@ public class GptRequest {
     private String request;
     private Double latitude;
     private Double longitude;
+    private Double endLatitude;
+    private Double endLongitude;
 }

@@ -25,7 +25,7 @@ public class GptHandler {
     private static TokenStore folderToken;
     private static TokenStore apiToken;
     public static String tokenFileName;
-    private static final String requestTemplate = "Создай пешеходный маршрут длиной примерно 5 км и выведи его в формате json без фразы ```json, где будет поле \"route\", в котором будет массив из координат маршрута, начинающийся в координатах %s, %s. Учти, что %s";
+    private static final String requestTemplate = "Создай пешеходный маршрут и выведи его в формате json без фразы ```json, где будет поле \"route\", в котором будет массив из координат маршрута, начинающийся в координатах %s, %s и заканчивающийся в %s, %s Учти, что %s";
     private static final String routeRequestTemplate = "https://api.geoapify.com/v1/routing?waypoints=%s&mode=walk&apiKey=%s";
     private static final OkHttpClient client = new OkHttpClient().newBuilder().build();
 
@@ -89,7 +89,7 @@ public class GptHandler {
         }
 
         String message = String.format(requestTemplate, request.getLatitude(),
-            request.getLongitude(), request.getRequest());
+            request.getLongitude(), request.getEndLatitude(), request.getEndLongitude(), request.getRequest());
 
         List<RouteItem> items = queryToGPT(iamToken, message);
 
